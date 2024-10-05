@@ -1,5 +1,6 @@
 import "./globals.css";
 import { archivo } from "./fonts/fonts";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
   title: "Create Next App",
@@ -10,7 +11,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${archivo.className} antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

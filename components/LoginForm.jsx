@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { clashDisplay } from "@/app/fonts/fonts";
 import { Separator } from "@/components/ui/separator";
 import googleIcon from "./icons/google";
 
@@ -63,7 +62,9 @@ const LoginForm = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button className="w-full">Sign In</Button>
+            <Button className="w-full" onClick={() => alert("Sign In")}>
+              Sign In
+            </Button>
             <div className="relative my-4 w-full">
               <Separator />
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
