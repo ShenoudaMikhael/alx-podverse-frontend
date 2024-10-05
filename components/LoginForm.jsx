@@ -15,9 +15,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import googleIcon from "./icons/google";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [date, setDate] = useState();
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   return (
     <Tabs defaultValue="signin" className="w-[400px]">
@@ -92,6 +108,49 @@ const LoginForm = () => {
             <div className="space-y-1">
               <Label htmlFor="signup-username">Username</Label>
               <Input id="signup-username" type="text" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="signup-email">Email</Label>
+              <Input id="signup-email" type="email" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-gender">Gender</Label>
+              <Select required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Date of Birth</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`w-full justify-start text-left font-normal ${
+                      !date && "text-muted-foreground"
+                    }`}
+                  >
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-password">Password</Label>

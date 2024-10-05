@@ -1,6 +1,7 @@
 import LoginForm from "@/components/LoginForm";
 import { clashDisplay } from "./fonts/fonts";
 import { ModeToggle } from "@/components/ThemeToggleButton";
+import Navbar from "@/components/Navbar";
 
 const loginPage =
   <div className="w-screen h-screen flex ">
