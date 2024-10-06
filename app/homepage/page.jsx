@@ -102,7 +102,7 @@ const page = () => {
       <Navbar />
 
       {/* Discover Podcasts */}
-      <div className=" px-10 justify-center items-center max-h-[calc((100vh - 88px) / 2)]">
+      <div className=" p-10 justify-center items-center max-h-[calc((100vh - 88px) / 2)]">
         {/* Title */}
         <h2 className="text-2xl font-bold my-4">Discover Podcasts</h2>
 
@@ -159,27 +159,11 @@ const page = () => {
         </div>
       </div>
 
-      {/* for smaller screens */}
-      <div className="px-4 flex flex-col gap-4 md:hidden">
-        {podcasts.map((podcast, i) => (
-          <PodcastCard
-            key={i}
-            title={podcast.title}
-            description={podcast.description}
-            host={podcast.host}
-            listeners={podcast.listeners}
-            category={podcast.category}
-            imageUrl={podcast.imageUrl}
-            isLive={podcast.isLive}
-          />
-        ))}
-      </div>
-
       {/* Divider */}
-      <Separator className="my-4" />
+      <Separator className="hidden md:block" />
 
       {/* People you follow Podcasts */}
-      <div className="px-10 pb-10 justify-center hidden md:block items-center max-h-[calc((100vh - 88px) / 2)]">
+      <div className="p-10 justify-center hidden md:block items-center max-h-[calc((100vh - 88px) / 2)]">
         {/* Title */}
         <h2 className="text-2xl font-bold my-4">People you follow</h2>
 
@@ -208,6 +192,22 @@ const page = () => {
             <CarouselNext />
           </Carousel>
         </div>
+      </div>
+
+      {/* for smaller screens */}
+      <div className="px-4 flex flex-col gap-4 md:hidden">
+        {podcasts.map((podcast, i) => (
+          <PodcastCard
+            key={i}
+            title={podcast.title}
+            description={podcast.description}
+            host={podcast.host}
+            listeners={podcast.listeners}
+            category={podcast.category}
+            imageUrl={podcast.imageUrl}
+            isLive={podcast.isLive}
+          />
+        ))}
       </div>
     </div>
   );
