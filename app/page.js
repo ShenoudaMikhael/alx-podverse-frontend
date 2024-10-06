@@ -1,10 +1,9 @@
 import LoginForm from "@/components/LoginForm";
 import { clashDisplay } from "./fonts/fonts";
 import { ModeToggle } from "@/components/ThemeToggleButton";
-import Navbar from "@/components/Navbar";
 
 const loginPage =
-  <div className="w-screen h-screen flex ">
+  <div className="w-screen min-h-screen h-auto flex ">
     <div className="p-10 hidden w-[50%] lg:flex gap-6 flex-col items-center justify-center">
       <h1 className={`${clashDisplay.className} text-7xl font-bold`}>        Podverse
       </h1>
