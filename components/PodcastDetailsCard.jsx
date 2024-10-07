@@ -12,7 +12,7 @@ const PodcastDetailsCard = ({
   imageurl,
 }) => {
   return (
-    <Card className="h-full p-2 flex flex-col gap-4 justify-center items-center">
+    <Card className="h-full p-4 flex flex-col gap-4 justify-center items-center">
       <h1 className="text-2xl font-bold">{title}</h1>
       <h2 className="max-w-[90%]">{description}</h2>
       <div className="w-full">

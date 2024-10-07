@@ -6,6 +6,8 @@ import PodcastDetailsCard from "@/components/PodcastDetailsCard";
 import { Card } from "@/components/ui/card";
 import ListenerControlsCard from "@/components/ListenerControlsCard";
 import ListUser from "@/components/ListUser";
+import LiveChat from "@/components/LiveChat";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const podCastDetails = {
   title: "Tech Talks",
@@ -63,24 +65,26 @@ const page = () => {
 
           {/* Live Chat */}
           <div className="p-2 grow">
-            <Card className="h-full p-2">Live Chat</Card>
+            <LiveChat />
           </div>
         </div>
 
         {/* Users List */}
         <div className="md:w-[30%] lg:w-[20%] hidden md:block p-2">
-          <Card className="h-full p-2 flex flex-col gap-2">
-            <p className="font-bold">Speakers</p>
-            <ListUser name={host.name} imageUrl={host.image} />
-            <p className="font-bold">Listeners</p>
-            {listeners.map((listener, index) => (
-              <ListUser
-                key={index}
-                name={listener.name}
-                imageUrl={listener.image}
-              />
-            ))}
-          </Card>
+          <ScrollArea className="border rounded-xl h-full p-4">
+            <div className="flex flex-col gap-3">
+              <p className="font-bold">Speakers</p>
+              <ListUser name={host.name} imageUrl={host.image} />
+              <p className="font-bold">Listeners</p>
+              {listeners.map((listener, index) => (
+                <ListUser
+                  key={index}
+                  name={listener.name}
+                  imageUrl={listener.image}
+                />
+              ))}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>

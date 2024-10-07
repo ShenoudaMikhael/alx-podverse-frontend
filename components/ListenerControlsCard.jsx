@@ -8,7 +8,7 @@ import { Mic, MicOff } from "lucide-react";
 const ListenerControlsCard = () => {
   const [isMute, setIsMute] = useState(false);
   return (
-    <Card className="h-full p-2 flex flex-col justify-around">
+    <Card className="h-full p-4 flex flex-col justify-around">
       <p>Controls</p>
       <div className="flex flex-row justify-around">
         <Button
