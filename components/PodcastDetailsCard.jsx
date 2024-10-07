@@ -4,7 +4,13 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 
-const PodcastDetailsCard = ({ title, description, host, category }) => {
+const PodcastDetailsCard = ({
+  title,
+  description,
+  host,
+  category,
+  imageurl,
+}) => {
   return (
     <Card className="h-full p-2 flex flex-col gap-4 justify-center items-center">
       <h1 className="text-2xl font-bold">{title}</h1>
@@ -12,7 +18,7 @@ const PodcastDetailsCard = ({ title, description, host, category }) => {
       <div className="w-full">
         <div className="flex w-full items-center justify-around">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={imageurl} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>

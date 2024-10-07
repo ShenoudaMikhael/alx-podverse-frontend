@@ -39,7 +39,7 @@ const PodcastDiscoveryCard = ({
         ></Image>
         <div className="flex items-center gap-3 mt-3">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://avatar.iran.liara.run/public" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>

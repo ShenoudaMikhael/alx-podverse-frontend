@@ -1,9 +1,11 @@
+"use client";
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import HostControlsCard from "@/components/HostControlsCard";
 import PodcastDetailsCard from "@/components/PodcastDetailsCard";
 import { Card } from "@/components/ui/card";
-import React from "react";
 import ListenerControlsCard from "@/components/ListenerControlsCard";
+import ListUser from "@/components/ListUser";
 
 const podCastDetails = {
   title: "Tech Talks",
@@ -14,6 +16,27 @@ const podCastDetails = {
 };
 
 const page = () => {
+  const [isHost, setIsHost] = useState(false);
+  const host = {
+    name: "Abdulrahman Hany",
+    email: "5a9kz@example.com",
+    image: "https://i.pravatar.cc/500?img=2",
+  };
+  const listeners = [
+    { name: "User 1", image: "https://i.pravatar.cc/500?img=3" },
+    { name: "User 2", image: "https://i.pravatar.cc/500?img=4" },
+    { name: "User 3", image: "https://i.pravatar.cc/500?img=5" },
+    { name: "User 4", image: "https://i.pravatar.cc/500?img=6" },
+    { name: "User 5", image: "https://i.pravatar.cc/500?img=7" },
+    { name: "User 6", image: "https://i.pravatar.cc/500?img=8" },
+    { name: "User 7", image: "https://i.pravatar.cc/500?img=9" },
+    { name: "User 8", image: "https://i.pravatar.cc/500?img=10" },
+    { name: "User 9", image: "https://i.pravatar.cc/500?img=11" },
+    { name: "User 10", image: "https://i.pravatar.cc/500?img=12" },
+    { name: "User 11", image: "https://i.pravatar.cc/500?img=13" },
+    { name: "User 12", image: "https://i.pravatar.cc/500?img=14" },
+  ];
+
   return (
     <div>
       <Navbar />
@@ -28,12 +51,13 @@ const page = () => {
                 description={podCastDetails.description}
                 host={podCastDetails.HostName}
                 category={podCastDetails.Category}
+                imageurl={host.image}
               />
             </div>
 
             {/* Podcast Controls */}
             <div className="p-2 grow">
-              <ListenerControlsCard />
+              {isHost ? <HostControlsCard /> : <ListenerControlsCard />}
             </div>
           </div>
 
@@ -45,9 +69,17 @@ const page = () => {
 
         {/* Users List */}
         <div className="md:w-[30%] lg:w-[20%] hidden md:block p-2">
-          <Card className="h-full p-2">
+          <Card className="h-full p-2 flex flex-col gap-2">
             <p className="font-bold">Speakers</p>
+            <ListUser name={host.name} imageUrl={host.image} />
             <p className="font-bold">Listeners</p>
+            {listeners.map((listener, index) => (
+              <ListUser
+                key={index}
+                name={listener.name}
+                imageUrl={listener.image}
+              />
+            ))}
           </Card>
         </div>
       </div>
