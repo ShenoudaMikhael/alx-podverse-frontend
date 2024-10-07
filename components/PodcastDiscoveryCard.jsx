@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Circle } from "lucide-react";
 import { Button } from "./ui/button";
 
-const PodcastCard = ({
+const PodcastDiscoveryCard = ({
   title,
   description,
   host,
@@ -69,4 +69,4 @@ const PodcastCard = ({
   );
 };
 
-export default PodcastCard;
+export default PodcastDiscoveryCard;

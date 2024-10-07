@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
-import PodcastCard from "@/components/PodcastCard";
+import PodcastDiscoveryCard from "@/components/PodcastDiscoveryCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
@@ -141,7 +141,7 @@ const page = () => {
                   key={i}
                   className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
                 >
-                  <PodcastCard
+                  <PodcastDiscoveryCard
                     title={podcast.title}
                     description={podcast.description}
                     host={podcast.host}
@@ -176,7 +176,7 @@ const page = () => {
                   key={i}
                   className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
                 >
-                  <PodcastCard
+                  <PodcastDiscoveryCard
                     title={podcast.title}
                     description={podcast.description}
                     host={podcast.host}
@@ -197,7 +197,7 @@ const page = () => {
       {/* for smaller screens */}
       <div className="px-4 flex flex-col gap-4 md:hidden">
         {podcasts.map((podcast, i) => (
-          <PodcastCard
+          <PodcastDiscoveryCard
             key={i}
             title={podcast.title}
             description={podcast.description}
