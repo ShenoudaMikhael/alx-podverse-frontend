@@ -31,8 +31,8 @@ const LiveChat = () => {
   };
 
   return (
-    <Card className="h-full flex flex-col">
-      <ScrollArea className="flex-grow p-4">
+    <Card className="h-full flex flex-col justify-between">
+      <ScrollArea className="flex-grow h-[calc(100vh-30rem)] p-4">
         <div className="space-y-2">
           {messages.map((message, index) => (
             <p key={index} className="break-words">
