@@ -22,7 +22,6 @@ const ProfileUpcomingPodcastCard = ({
   upcomingPodcasts,
   setUpcomingPodcasts,
 }) => {
-  console.log(title, description, category, imageUrl, isLive);
   const deletePodcast = (name) => {
     setUpcomingPodcasts(
       upcomingPodcasts.filter((podcast) => podcast.title !== name)

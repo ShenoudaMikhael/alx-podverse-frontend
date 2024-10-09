@@ -36,13 +36,28 @@ const EditPodcastDialog = ({
   const [newImageUrl, setNewImageUrl] = useState(imageUrl);
   const [editPodcastDialogOpen, setEditPodcastDialogOpen] = useState(false);
 
-  const handleSave = () => {};
+  const handleSave = () => {
+    setUpcomingPodcasts(
+      upcomingPodcasts.map((podcast) =>
+        podcast.title === title
+          ? {
+              ...podcast,
+              title: newTitle,
+              description: newDescription,
+              category: newCategory,
+              imageUrl: newImageUrl,
+            }
+          : podcast
+      )
+    );
+    setEditPodcastDialogOpen(false);
+  };
   const handlePodcastImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log(reader.result);
+      reader.onload = (e) => {
+        setNewImageUrl(e.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -72,7 +87,7 @@ const EditPodcastDialog = ({
             </Label>
             <Input
               id="title"
-              value={newTitle}
+              defaultValue={title}
               onChange={(e) => setNewTitle(e.target.value)}
             />
           </div>
@@ -84,14 +99,14 @@ const EditPodcastDialog = ({
             </Label>
             <Input
               id="description"
-              value={newDescription}
+              defaultValue={description}
               onChange={(e) => setNewDescription(e.target.value)}
             />
           </div>
           {/* Category field */}
           <div>
             <Label htmlFor="category">Category</Label>
-            <Select value={newCategory} onValueChange={setNewCategory}>
+            <Select defaultValue={category} onValueChange={setNewCategory}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
@@ -107,12 +122,12 @@ const EditPodcastDialog = ({
             </Select>
           </div>
           <div>
-            <Label htmlFor="picture">
+            <Label htmlFor="podcastpicture">
               <div className="cursor-pointer border-2 border-dashed p-4">
                 Upload New Picture
               </div>
               <Input
-                id="picture"
+                id="podcastpicture"
                 type="file"
                 accept="image/*"
                 className="sr-only"

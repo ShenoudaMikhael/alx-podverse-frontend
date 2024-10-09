@@ -14,25 +14,9 @@ import {
 } from "@/components/ui/carousel";
 import ProfilePastPodcastCard from "@/components/ProfilePastPodcastCard";
 import ProfileUpcomingPodcastCard from "@/components/ProfileUpcomingPodcastCard";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EditProfileDialog from "@/components/EditProfileDialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import ProfileList from "@/components/ProfileList";
 
 const podcasts = [
@@ -113,7 +97,6 @@ const page = () => {
   const [password, setPassword] = useState("123456");
   const [DOB, setDOB] = useState("2022-01-02");
   const [gender, setGender] = useState("male");
-  const [editProfileDialogOpen, setEditProfileDialogOpen] = useState(false);
   const [pastPodcasts, setPastPodcasts] = useState(podcasts);
   const [upcomingPodcasts, setUpcomingPodcasts] = useState(podcasts);
 
@@ -140,12 +123,7 @@ const page = () => {
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log(reader.result);
-        setProfilePicture(reader.result);
-      };
-      reader.readAsDataURL(file);
+      setProfilePicture(URL.createObjectURL(file));
     }
   };
   return (
@@ -162,14 +140,14 @@ const page = () => {
               </Avatar>
               {/* Change Profile Picture Button */}
               <Label
-                htmlFor="picture"
+                htmlFor="profilepicture"
                 className="absolute top-[120px] right-[70px] cursor-pointer"
               >
                 <div className="rounded-full bg-primary p-2 text-primary-foreground">
                   <UserRoundPen className="h-5 w-5 mx-auto my-auto" />
                 </div>
                 <Input
-                  id="picture"
+                  id="profilepicture"
                   type="file"
                   accept="image/*"
                   className="sr-only"
