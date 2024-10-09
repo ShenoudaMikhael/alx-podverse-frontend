@@ -21,9 +21,17 @@ const ProfileList = ({ listName, list }) => {
           <p>{listName}</p>
         </div>
       </DialogTrigger>
-      <DialogContent className="rounded-xl max-w-[80vw] sm:max-w-[425px]">
+      <DialogContent
+        aria-describedby="Followers or Following list"
+        className="rounded-xl max-w-[80vw] sm:max-w-[425px]"
+      >
         <DialogHeader>
           <DialogTitle>{listName} List</DialogTitle>
+          <DialogDescription>
+            {listName === "Following"
+              ? "People you follow"
+              : "People following you"}
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[300px]">
           <div className="flex flex-col gap-2">

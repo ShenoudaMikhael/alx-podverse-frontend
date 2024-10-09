@@ -65,7 +65,10 @@ const EditProfileDialog = ({
           <Edit className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-xl max-w-[80vw] sm:max-w-[425px]">
+      <DialogContent
+        aria-describedby="Edit profile"
+        className="rounded-xl max-w-[80vw] sm:max-w-[425px]"
+      >
         {/* Header */}
         <DialogHeader>
           <DialogTitle className="text-center">Edit profile</DialogTitle>

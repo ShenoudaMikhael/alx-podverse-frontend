@@ -19,6 +19,7 @@ import {
   SelectValue,
   SelectContent,
 } from "./ui/select";
+import { UploadIcon } from "lucide-react";
 
 const EditPodcastDialog = ({
   title,
@@ -36,6 +37,16 @@ const EditPodcastDialog = ({
   const [editPodcastDialogOpen, setEditPodcastDialogOpen] = useState(false);
 
   const handleSave = () => {};
+  const handlePodcastImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        console.log(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <Dialog
       open={editPodcastDialogOpen}
@@ -48,6 +59,9 @@ const EditPodcastDialog = ({
         {/* Header */}
         <DialogHeader>
           <DialogTitle className="text-center">Edit podcast</DialogTitle>
+          <DialogDescription>
+            Make changes to your podcast here. Click save when you are done.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Title field */}
@@ -91,6 +105,20 @@ const EditPodcastDialog = ({
                 <SelectItem value="Others">Others</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label htmlFor="picture">
+              <div className="cursor-pointer border-2 border-dashed p-4">
+                Upload New Picture
+              </div>
+              <Input
+                id="picture"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={handlePodcastImageChange}
+              />
+            </Label>
           </div>
         </div>
         {/* Save button */}
