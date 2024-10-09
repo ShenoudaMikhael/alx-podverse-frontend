@@ -33,7 +33,33 @@ import { format } from "date-fns";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [date, setDate] = useState();
+
+  // Sign In Credentials
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+
+  // Sign Up Credentials
+  const [signupName, setSignupName] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupGender, setSignupGender] = useState("");
+  const [signupDate, setSignupDate] = useState();
+  const [signupPassword, setSignupPassword] = useState("");
+
+  const handleSignin = () => {
+    console.log(signinEmail, signinPassword);
+  };
+  const handleSignup = () => {
+    console.log(
+      signupName,
+      signupUsername,
+      signupEmail,
+      signupGender,
+      signupDate,
+      signupPassword
+    );
+  };
+
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   return (
     <Tabs defaultValue="signin" className="w-[400px]">
@@ -41,6 +67,8 @@ const LoginForm = () => {
         <TabsTrigger value="signin">Sign In</TabsTrigger>
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
       </TabsList>
+
+      {/* Sign In */}
       <TabsContent value="signin">
         <Card>
           <CardHeader>
@@ -52,12 +80,17 @@ const LoginForm = () => {
           <CardContent className="space-y-2">
             <div className="space-y-1">
               <Label htmlFor="signin-email">Email</Label>
-              <Input id="signin-email" type="email" />
+              <Input
+                onChange={(e) => setSigninEmail(e.target.value)}
+                id="signin-email"
+                type="email"
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="signin-password">Password</Label>
               <div className="relative">
                 <Input
+                  onChange={(e) => setSigninPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
                   id="signin-password"
                 />
@@ -78,7 +111,7 @@ const LoginForm = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button className="w-full" onClick={() => alert("Sign In")}>
+            <Button className="w-full" onClick={() => handleSignin()}>
               Sign In
             </Button>
             <div className="relative my-4 w-full">
@@ -94,6 +127,8 @@ const LoginForm = () => {
           </CardFooter>
         </Card>
       </TabsContent>
+
+      {/* SIGN UP */}
       <TabsContent value="signup">
         <Card>
           <CardHeader>
@@ -103,25 +138,37 @@ const LoginForm = () => {
           <CardContent className="space-y-2">
             <div className="space-y-1">
               <Label htmlFor="signup-name">Name</Label>
-              <Input id="signup-name" type="text" />
+              <Input
+                id="signup-name"
+                type="text"
+                onChange={(e) => setSignupName(e.target.value)}
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-username">Username</Label>
-              <Input id="signup-username" type="text" />
+              <Input
+                id="signup-username"
+                type="text"
+                onChange={(e) => setSignupUsername(e.target.value)}
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-email">Email</Label>
-              <Input id="signup-email" type="email" />
+              <Input
+                id="signup-email"
+                type="email"
+                onChange={(e) => setSignupEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="signup-gender">Gender</Label>
-              <Select required>
+              <Select onValueChange={setSignupGender} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -132,20 +179,25 @@ const LoginForm = () => {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      !date && "text-muted-foreground"
+                      !signupDate && "text-muted-foreground"
                     }`}
                   >
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {signupDate ? (
+                      format(signupDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                    selected={signupDate}
+                    onSelect={(e) => setSignupDate(format(e, "yyyy-MM-dd"))}
+                    disabled={(signupDate) =>
+                      signupDate > new Date() ||
+                      signupDate < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -158,6 +210,7 @@ const LoginForm = () => {
                 <Input
                   type={showPassword ? "text" : "password"}
                   id="signup-password"
+                  onChange={(e) => setSignupPassword(e.target.value)}
                 />
                 <Button
                   type="button"
@@ -176,7 +229,9 @@ const LoginForm = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button className="w-full">Sign Up</Button>
+            <Button className="w-full" onClick={() => handleSignup()}>
+              Sign Up
+            </Button>
             <div className="relative my-4 w-full">
               <Separator />
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
