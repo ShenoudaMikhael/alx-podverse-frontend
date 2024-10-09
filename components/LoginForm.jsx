@@ -37,6 +37,8 @@ const LoginForm = () => {
   // Sign In Credentials
   const [signinEmail, setSigninEmail] = useState("");
   const [signinPassword, setSigninPassword] = useState("");
+  const [signinEmailError, setSigninEmailError] = useState("");
+  const [signinPasswordError, setSigninPasswordError] = useState("");
 
   // Sign Up Credentials
   const [signupName, setSignupName] = useState("");
@@ -45,22 +47,105 @@ const LoginForm = () => {
   const [signupGender, setSignupGender] = useState("");
   const [signupDate, setSignupDate] = useState();
   const [signupPassword, setSignupPassword] = useState("");
+  const [signupNameError, setSignupNameError] = useState("");
+  const [signupUsernameError, setSignupUsernameError] = useState("");
+  const [signupEmailError, setSignupEmailError] = useState("");
+  const [signupGenderError, setSignupGenderError] = useState("");
+  const [signupDateError, setSignupDateError] = useState("");
+  const [signupPasswordError, setSignupPasswordError] = useState("");
+
+  //  Validator functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
 
   const handleSignin = () => {
-    console.log(signinEmail, signinPassword);
+    let isValid = true;
+
+    if (!signinEmail || !validateEmail(signinEmail)) {
+      setSigninEmailError("Invalid email address");
+      isValid = false;
+    } else {
+      setSigninEmailError("");
+    }
+
+    if (!signinPassword || !validatePassword(signinPassword)) {
+      setSigninPasswordError("Password must be at least 8 characters");
+      isValid = false;
+    } else {
+      setSigninPasswordError("");
+    }
+
+    if (isValid) {
+      console.log(signinEmail, signinPassword);
+    }
   };
+
   const handleSignup = () => {
-    console.log(
-      signupName,
-      signupUsername,
-      signupEmail,
-      signupGender,
-      signupDate,
-      signupPassword
-    );
+    let isValid = true;
+
+    if (!signupName || signupName.trim() === "") {
+      setSignupNameError("Name is required");
+      isValid = false;
+    } else {
+      setSignupNameError("");
+    }
+
+    if (!signupUsername || signupUsername.trim() === "") {
+      setSignupUsernameError("Username is required");
+      isValid = false;
+    } else {
+      setSignupUsernameError("");
+    }
+
+    if (!signupEmail || !validateEmail(signupEmail)) {
+      setSignupEmailError("Invalid email address");
+      isValid = false;
+    } else {
+      setSignupEmailError("");
+    }
+
+    if (!signupGender) {
+      setSignupGenderError("Gender is required");
+      isValid = false;
+    } else {
+      setSignupGenderError("");
+    }
+
+    if (!signupDate) {
+      setSignupDateError("Date of birth is required");
+      isValid = false;
+    } else {
+      setSignupDateError("");
+    }
+
+    if (!signupPassword || !validatePassword(signupPassword)) {
+      setSignupPasswordError("Password must be at least 8 characters");
+      isValid = false;
+    } else {
+      setSignupPasswordError("");
+    }
+
+    // if all fields are valid
+    if (isValid) {
+      console.log(
+        signupName,
+        signupUsername,
+        signupEmail,
+        signupGender,
+        signupDate,
+        signupPassword
+      );
+    }
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   return (
     <Tabs defaultValue="signin" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
@@ -84,7 +169,11 @@ const LoginForm = () => {
                 onChange={(e) => setSigninEmail(e.target.value)}
                 id="signin-email"
                 type="email"
+                className={signinEmailError ? "border-red-500" : ""}
               />
+              {signinEmailError && (
+                <div className="text-red-500 text-xs">{signinEmailError}</div>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="signin-password">Password</Label>
@@ -93,6 +182,7 @@ const LoginForm = () => {
                   onChange={(e) => setSigninPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
                   id="signin-password"
+                  className={signinPasswordError ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
@@ -108,6 +198,11 @@ const LoginForm = () => {
                   )}
                 </Button>
               </div>
+              {signinPasswordError && (
+                <div className="text-red-500 text-xs">
+                  {signinPasswordError}
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
@@ -142,7 +237,11 @@ const LoginForm = () => {
                 id="signup-name"
                 type="text"
                 onChange={(e) => setSignupName(e.target.value)}
+                className={signupNameError ? "border-red-500" : ""}
               />
+              {signupNameError && (
+                <div className="text-red-500 text-xs">{signupNameError}</div>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-username">Username</Label>
@@ -150,7 +249,13 @@ const LoginForm = () => {
                 id="signup-username"
                 type="text"
                 onChange={(e) => setSignupUsername(e.target.value)}
+                className={signupUsernameError ? "border-red-500" : ""}
               />
+              {signupUsernameError && (
+                <div className="text-red-500 text-xs">
+                  {signupUsernameError}
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-email">Email</Label>
@@ -158,11 +263,19 @@ const LoginForm = () => {
                 id="signup-email"
                 type="email"
                 onChange={(e) => setSignupEmail(e.target.value)}
+                className={signupEmailError ? "border-red-500" : ""}
               />
+              {signupEmailError && (
+                <div className="text-red-500 text-xs">{signupEmailError}</div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="signup-gender">Gender</Label>
-              <Select onValueChange={setSignupGender} required>
+              <Select
+                onValueChange={setSignupGender}
+                required
+                className={signupGenderError ? "border-red-500" : ""}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
@@ -171,6 +284,9 @@ const LoginForm = () => {
                   <SelectItem value="Female">Female</SelectItem>
                 </SelectContent>
               </Select>
+              {signupGenderError && (
+                <div className="text-red-500 text-xs">{signupGenderError}</div>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Date of Birth</Label>
@@ -180,7 +296,7 @@ const LoginForm = () => {
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
                       !signupDate && "text-muted-foreground"
-                    }`}
+                    } ${signupDateError ? "border-red-500" : ""}`}
                   >
                     {signupDate ? (
                       format(signupDate, "PPP")
@@ -203,6 +319,9 @@ const LoginForm = () => {
                   />
                 </PopoverContent>
               </Popover>
+              {signupDateError && (
+                <div className="text-red-500 text-xs">{signupDateError}</div>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-password">Password</Label>
@@ -211,6 +330,7 @@ const LoginForm = () => {
                   type={showPassword ? "text" : "password"}
                   id="signup-password"
                   onChange={(e) => setSignupPassword(e.target.value)}
+                  className={signupPasswordError ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
@@ -226,6 +346,11 @@ const LoginForm = () => {
                   )}
                 </Button>
               </div>
+              {signupPasswordError && (
+                <div className="text-red-500 text-xs">
+                  {signupPasswordError}
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
