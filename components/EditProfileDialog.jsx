@@ -80,11 +80,8 @@ const EditProfileDialog = ({
         {/* Name field */}
         <div className="flex flex-col gap-4 py-4">
           <div>
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
+            <Label className="text-right">Name</Label>
             <Input
-              id="name"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
@@ -92,11 +89,8 @@ const EditProfileDialog = ({
 
           {/* Username field */}
           <div>
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
+            <Label className="text-right">Username</Label>
             <Input
-              id="username"
               value={`@${newUsername}`}
               onChange={(e) => setNewUsername(e.target.value.replace("@", ""))}
             />
@@ -104,22 +98,12 @@ const EditProfileDialog = ({
 
           {/* Email field */}
           <div>
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input
-              disabled
-              id="email"
-              value={newEmail}
-              className="col-span-3"
-            />
+            <Label className="text-right">Email</Label>
+            <Input disabled value={newEmail} className="col-span-3" />
           </div>
           <div>
-            <Label htmlFor="password" className="text-right">
-              Password
-            </Label>
+            <Label className="text-right">Password</Label>
             <Input
-              id="password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -128,11 +112,8 @@ const EditProfileDialog = ({
 
           {/* DOB field */}
           <div>
-            <Label htmlFor="dob" className="text-right">
-              Date of Birth
-            </Label>
+            <Label className="text-right">Date of Birth</Label>
             <Input
-              id="dob"
               type="date"
               value={newDOB}
               onChange={(e) => setNewDOB(e.target.value)}
@@ -141,7 +122,7 @@ const EditProfileDialog = ({
 
           {/* Gender field */}
           <div>
-            <Label htmlFor="gender">Gender</Label>
+            <Label>Gender</Label>
             <Select value={newGender} onValueChange={setNewGender}>
               <SelectTrigger>
                 <SelectValue placeholder="Select gender" />

@@ -82,11 +82,8 @@ const EditPodcastDialog = ({
         {/* Title field */}
         <div className="flex flex-col gap-4 py-4">
           <div>
-            <Label htmlFor="title" className="text-right">
-              Title
-            </Label>
+            <Label className="text-right">Title</Label>
             <Input
-              id="title"
               defaultValue={title}
               onChange={(e) => setNewTitle(e.target.value)}
             />
@@ -94,18 +91,15 @@ const EditPodcastDialog = ({
 
           {/* Description field */}
           <div>
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
+            <Label className="text-right">Description</Label>
             <Input
-              id="description"
               defaultValue={description}
               onChange={(e) => setNewDescription(e.target.value)}
             />
           </div>
           {/* Category field */}
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label>Category</Label>
             <Select defaultValue={category} onValueChange={setNewCategory}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Category" />
@@ -122,12 +116,11 @@ const EditPodcastDialog = ({
             </Select>
           </div>
           <div>
-            <Label htmlFor="podcastpicture">
+            <Label>
               <div className="cursor-pointer border-2 border-dashed p-4">
                 Upload New Picture
               </div>
               <Input
-                id="podcastpicture"
                 type="file"
                 accept="image/*"
                 className="sr-only"

@@ -44,7 +44,6 @@ const LiveChat = () => {
       <form onSubmit={sendMessage} className="p-4 border-t">
         <div className="flex gap-2">
           <Input
-            id="message"
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}

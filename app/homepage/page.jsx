@@ -28,71 +28,179 @@ const page = () => {
     "Sports",
     "Others",
   ];
-  const podcasts = [
+  const discoverPodcasts = [
     {
-      title: "Live Tech Talk",
-      description: "Stay updated with the latest in technology and gadgets.",
-      host: "John Doe",
-      listeners: "1.2k",
+      title: "Morning News",
+      description: "Stay updated with the latest news and current events.",
+      host: "Emily Davis",
+      listeners: "1.8k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "The Daily Brief",
+      description: "A daily dose of news, analysis, and commentary.",
+      host: "David Lee",
+      listeners: "1.4k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "Tech Talk Daily",
+      description: "The latest tech news, trends, and innovations.",
+      host: "Samantha Brown",
+      listeners: "1.6k",
       category: "Technology",
       imageUrl: "https://placehold.co/1470x980/jpg",
       isLive: true,
     },
     {
-      title: "Science Today",
+      title: "The Science Hour",
       description: "Exploring the wonders of science and new discoveries.",
-      host: "Jane Smith",
-      listeners: "950",
+      host: "Dr. Maria Rodriguez",
+      listeners: "1.2k",
       category: "Science",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "Entertainment Tonight",
+      description: "Your daily dose of movies, music, and pop culture.",
+      host: "Ryan Thompson",
+      listeners: "1.9k",
+      category: "Entertainment",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "The Political Pulse",
+      description: "A deep dive into the latest political news and events.",
+      host: "Senator James Wilson",
+      listeners: "1.5k",
+      category: "Politics",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "Wellness Wednesday",
+      description: "Tips for a healthier and happier life.",
+      host: "Dr. Sophia Patel",
+      listeners: "1.7k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "Business Insights",
+      description: "Insights into the business world and market trends.",
+      host: "CEO Mark Davis",
+      listeners: "1.3k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "History Revisited",
+      description: "Exploring the events and figures that shaped the world.",
+      host: "Professor John Taylor",
+      listeners: "1.1k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+  ];
+  const followersPodcasts = [
+    {
+      title: "Crime Scene Investigation",
+      description: "Real-life crime stories and unsolved mysteries.",
+      host: "Detective James Martin",
+      listeners: "2.2k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: false,
+    },
+    {
+      title: "The Morning Show",
+      description: "Start your day with news, entertainment, and more.",
+      host: "Tom Harris",
+      listeners: "2.5k",
+      category: "Others",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
+    },
+    {
+      title: "The Tech Report",
+      description: "The latest tech news, trends, and innovations.",
+      host: "Samantha Brown",
+      listeners: "1.8k",
+      category: "Technology",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: false,
+    },
+    {
+      title: "Science in Action",
+      description: "Exploring the wonders of science and new discoveries.",
+      host: "Dr. Maria Rodriguez",
+      listeners: "1.4k",
+      category: "Science",
+      imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
     },
     {
       title: "Entertainment Weekly",
       description: "Your weekly dose of movies, music, and pop culture.",
-      host: "Alice Johnson",
-      listeners: "1.5k",
+      host: "Ryan Thompson",
+      listeners: "2.1k",
       category: "Entertainment",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: false,
     },
     {
-      title: "Political Roundup",
+      title: "The Political Roundup",
       description: "A deep dive into the latest political news and events.",
-      host: "Bob Williams",
-      listeners: "800",
+      host: "Senator James Wilson",
+      listeners: "1.9k",
       category: "Politics",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
     },
     {
-      title: "Health & Wellness",
+      title: "Health and Wellness",
       description: "Tips for a healthier and happier life.",
-      host: "Sarah Lee",
-      listeners: "1.3k",
-      category: "Health",
+      host: "Dr. Sophia Patel",
+      listeners: "1.6k",
+      category: "Others",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: false,
     },
     {
-      title: "Business Buzz",
+      title: "Business Today",
       description: "Insights into the business world and market trends.",
-      host: "Michael Green",
-      listeners: "1.1k",
-      category: "Business",
+      host: "CEO Mark Davis",
+      listeners: "1.8k",
+      category: "Others",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
     },
     {
       title: "History Uncovered",
       description: "Exploring the events and figures that shaped the world.",
-      host: "Robert Black",
-      listeners: "750",
-      category: "History",
+      host: "Professor John Taylor",
+      listeners: "1.5k",
+      category: "Others",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: false,
     },
     {
       title: "True Crime Chronicles",
       description: "Real-life crime stories and unsolved mysteries.",
-      host: "Laura White",
-      listeners: "2.0k",
-      category: "True Crime",
+      host: "Detective James Martin",
+      listeners: "2.4k",
+      category: "Others",
       imageUrl: "https://placehold.co/1470x980/jpg",
+      isLive: true,
     },
   ];
 
@@ -136,7 +244,7 @@ const page = () => {
         <div className="w-full hidden md:block px-4 md:px-10">
           <Carousel className="w-full ">
             <CarouselContent className="-ml-1">
-              {podcasts.map((podcast, i) => (
+              {discoverPodcasts.map((podcast, i) => (
                 <CarouselItem
                   key={i}
                   className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
@@ -171,7 +279,7 @@ const page = () => {
         <div className="w-full px-4 md:px-10">
           <Carousel className="w-full">
             <CarouselContent className="-ml-1">
-              {podcasts.map((podcast, i) => (
+              {followersPodcasts.map((podcast, i) => (
                 <CarouselItem
                   key={i}
                   className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
@@ -196,7 +304,7 @@ const page = () => {
 
       {/* for smaller screens */}
       <div className="px-4 flex flex-col gap-4 md:hidden">
-        {podcasts.map((podcast, i) => (
+        {discoverPodcasts.map((podcast, i) => (
           <PodcastDiscoveryCard
             key={i}
             title={podcast.title}

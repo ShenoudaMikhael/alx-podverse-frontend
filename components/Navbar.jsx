@@ -57,7 +57,7 @@ const Navbar = () => {
         >
           Home
         </Link>
-        <Link href="/live">
+        <Link href="/create-podcast">
           <Button>Go Live</Button>
         </Link>
         {userAvatar}

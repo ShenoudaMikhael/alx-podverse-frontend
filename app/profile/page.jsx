@@ -139,15 +139,11 @@ const page = () => {
                 <AvatarImage src={profilePicture}></AvatarImage>
               </Avatar>
               {/* Change Profile Picture Button */}
-              <Label
-                htmlFor="profilepicture"
-                className="absolute top-[120px] right-[70px] cursor-pointer"
-              >
+              <Label className="absolute top-[120px] right-[70px] cursor-pointer">
                 <div className="rounded-full bg-primary p-2 text-primary-foreground">
                   <UserRoundPen className="h-5 w-5 mx-auto my-auto" />
                 </div>
                 <Input
-                  id="profilepicture"
                   type="file"
                   accept="image/*"
                   className="sr-only"

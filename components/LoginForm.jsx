@@ -164,10 +164,9 @@ const LoginForm = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="signin-email">Email</Label>
+              <Label>Email</Label>
               <Input
                 onChange={(e) => setSigninEmail(e.target.value)}
-                id="signin-email"
                 type="email"
                 className={signinEmailError ? "border-red-500" : ""}
               />
@@ -176,12 +175,11 @@ const LoginForm = () => {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signin-password">Password</Label>
+              <Label>Password</Label>
               <div className="relative">
                 <Input
                   onChange={(e) => setSigninPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
-                  id="signin-password"
                   className={signinPasswordError ? "border-red-500" : ""}
                 />
                 <Button
@@ -232,9 +230,8 @@ const LoginForm = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="signup-name">Name</Label>
+              <Label>Name</Label>
               <Input
-                id="signup-name"
                 type="text"
                 onChange={(e) => setSignupName(e.target.value)}
                 className={signupNameError ? "border-red-500" : ""}
@@ -244,9 +241,8 @@ const LoginForm = () => {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-username">Username</Label>
+              <Label>Username</Label>
               <Input
-                id="signup-username"
                 type="text"
                 onChange={(e) => setSignupUsername(e.target.value)}
                 className={signupUsernameError ? "border-red-500" : ""}
@@ -258,9 +254,8 @@ const LoginForm = () => {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-email">Email</Label>
+              <Label>Email</Label>
               <Input
-                id="signup-email"
                 type="email"
                 onChange={(e) => setSignupEmail(e.target.value)}
                 className={signupEmailError ? "border-red-500" : ""}
@@ -270,7 +265,7 @@ const LoginForm = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signup-gender">Gender</Label>
+              <Label>Gender</Label>
               <Select
                 onValueChange={setSignupGender}
                 required
@@ -324,11 +319,10 @@ const LoginForm = () => {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-password">Password</Label>
+              <Label>Password</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  id="signup-password"
                   onChange={(e) => setSignupPassword(e.target.value)}
                   className={signupPasswordError ? "border-red-500" : ""}
                 />
