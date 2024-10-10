@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import io from 'socket.io-client';
+import StaticData from "./staticData";
 
-const socket = io.connect('http://localhost:3000', { transports: ['websocket'] }); // Connect to the Socket.io server
+const socket = StaticData.socket; // Connect to the Socket.io server
 
 const Chat = () => {
     const [message, setMessage] = useState('');
