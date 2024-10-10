@@ -96,7 +96,7 @@ const page = () => {
   const [email, setEmail] = useState("abdu.hany@gmail.com");
   const [password, setPassword] = useState("123456");
   const [DOB, setDOB] = useState("2022-01-02");
-  const [gender, setGender] = useState("male");
+  const [gender, setGender] = useState("Male");
   const [pastPodcasts, setPastPodcasts] = useState(podcasts);
   const [upcomingPodcasts, setUpcomingPodcasts] = useState(podcasts);
 
