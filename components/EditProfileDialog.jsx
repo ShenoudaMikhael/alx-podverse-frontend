@@ -19,9 +19,12 @@ import {
   SelectValue,
   SelectContent,
 } from "./ui/select";
-import { Edit } from "lucide-react";
+import { CalendarIcon, Edit } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "./ui/calendar";
 
 const EditProfileDialog = ({
   name,
@@ -65,6 +68,7 @@ const EditProfileDialog = ({
       return;
     }
     console.log("Password changed");
+    setEditProfileDialogOpen(false);
   };
   return (
     <Dialog
@@ -79,7 +83,7 @@ const EditProfileDialog = ({
       </DialogTrigger>
       <DialogContent
         aria-describedby="Edit profile"
-        className="rounded-xl sm:max-w-[425px]"
+        className="rounded-xl max-w-[95vw] sm:max-w-[425px]"
       >
         {/* Header */}
         <DialogHeader>
@@ -90,10 +94,12 @@ const EditProfileDialog = ({
         </DialogHeader>
 
         <Tabs defaultValue="account">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Account Details</TabsTrigger>
             <TabsTrigger value="password">Change Password</TabsTrigger>
           </TabsList>
+
+          {/* Account details tab */}
           <TabsContent value="account">
             {/* Name field */}
             <div className="flex flex-col gap-4 py-4">
@@ -122,14 +128,37 @@ const EditProfileDialog = ({
                 <Input disabled value={newEmail} className="col-span-3" />
               </div>
 
-              {/* DOB field */}
-              <div>
-                <Label className="text-right">Date of Birth</Label>
-                <Input
-                  type="date"
-                  value={newDOB}
-                  onChange={(e) => setNewDOB(e.target.value)}
-                />
+              {/* Date of Birth field */}
+              <div className="space-y-2">
+                <Label>Date of Birth</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${
+                        !newDOB && "text-muted-foreground"
+                      } `}
+                    >
+                      {newDOB ? (
+                        format(newDOB, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={newDOB}
+                      onSelect={(e) => setNewDOB(format(e, "yyyy-MM-dd"))}
+                      disabled={(newDOB) =>
+                        newDOB > new Date() || newDOB < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Gender field */}
@@ -145,10 +174,13 @@ const EditProfileDialog = ({
                   </SelectContent>
                 </Select>
               </div>
+
               {/* Save button */}
               <Button onClick={handleSave}>Save changes</Button>
             </div>
           </TabsContent>
+
+          {/* Password tab */}
           <TabsContent value="password">
             {/* Password field */}
             <div className="flex flex-col gap-4 py-4">
