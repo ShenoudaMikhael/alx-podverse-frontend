@@ -33,14 +33,127 @@ import { format } from "date-fns";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [date, setDate] = useState();
+
+  // Sign In Credentials
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+  const [signinEmailError, setSigninEmailError] = useState("");
+  const [signinPasswordError, setSigninPasswordError] = useState("");
+
+  // Sign Up Credentials
+  const [signupName, setSignupName] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupGender, setSignupGender] = useState("");
+  const [signupDate, setSignupDate] = useState();
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupNameError, setSignupNameError] = useState("");
+  const [signupUsernameError, setSignupUsernameError] = useState("");
+  const [signupEmailError, setSignupEmailError] = useState("");
+  const [signupGenderError, setSignupGenderError] = useState("");
+  const [signupDateError, setSignupDateError] = useState("");
+  const [signupPasswordError, setSignupPasswordError] = useState("");
+
+  //  Validator functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
+  const handleSignin = () => {
+    let isValid = true;
+
+    if (!signinEmail || !validateEmail(signinEmail)) {
+      setSigninEmailError("Invalid email address");
+      isValid = false;
+    } else {
+      setSigninEmailError("");
+    }
+
+    if (!signinPassword || !validatePassword(signinPassword)) {
+      setSigninPasswordError("Password must be at least 8 characters");
+      isValid = false;
+    } else {
+      setSigninPasswordError("");
+    }
+
+    if (isValid) {
+      console.log(signinEmail, signinPassword);
+    }
+  };
+
+  const handleSignup = () => {
+    let isValid = true;
+
+    if (!signupName || signupName.trim() === "") {
+      setSignupNameError("Name is required");
+      isValid = false;
+    } else {
+      setSignupNameError("");
+    }
+
+    if (!signupUsername || signupUsername.trim() === "") {
+      setSignupUsernameError("Username is required");
+      isValid = false;
+    } else {
+      setSignupUsernameError("");
+    }
+
+    if (!signupEmail || !validateEmail(signupEmail)) {
+      setSignupEmailError("Invalid email address");
+      isValid = false;
+    } else {
+      setSignupEmailError("");
+    }
+
+    if (!signupGender) {
+      setSignupGenderError("Gender is required");
+      isValid = false;
+    } else {
+      setSignupGenderError("");
+    }
+
+    if (!signupDate) {
+      setSignupDateError("Date of birth is required");
+      isValid = false;
+    } else {
+      setSignupDateError("");
+    }
+
+    if (!signupPassword || !validatePassword(signupPassword)) {
+      setSignupPasswordError("Password must be at least 8 characters");
+      isValid = false;
+    } else {
+      setSignupPasswordError("");
+    }
+
+    // if all fields are valid
+    if (isValid) {
+      console.log(
+        signupName,
+        signupUsername,
+        signupEmail,
+        signupGender,
+        signupDate,
+        signupPassword
+      );
+    }
+  };
+
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   return (
     <Tabs defaultValue="signin" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="signin">Sign In</TabsTrigger>
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
       </TabsList>
+
+      {/* Sign In */}
       <TabsContent value="signin">
         <Card>
           <CardHeader>
@@ -51,15 +164,23 @@ const LoginForm = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="signin-email">Email</Label>
-              <Input id="signin-email" type="email" />
+              <Label>Email</Label>
+              <Input
+                onChange={(e) => setSigninEmail(e.target.value)}
+                type="email"
+                className={signinEmailError ? "border-red-500" : ""}
+              />
+              {signinEmailError && (
+                <div className="text-red-500 text-xs">{signinEmailError}</div>
+              )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signin-password">Password</Label>
+              <Label>Password</Label>
               <div className="relative">
                 <Input
+                  onChange={(e) => setSigninPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
-                  id="signin-password"
+                  className={signinPasswordError ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
@@ -75,10 +196,15 @@ const LoginForm = () => {
                   )}
                 </Button>
               </div>
+              {signinPasswordError && (
+                <div className="text-red-500 text-xs">
+                  {signinPasswordError}
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button className="w-full" onClick={() => alert("Sign In")}>
+            <Button className="w-full" onClick={() => handleSignin()}>
               Sign In
             </Button>
             <div className="relative my-4 w-full">
@@ -94,6 +220,8 @@ const LoginForm = () => {
           </CardFooter>
         </Card>
       </TabsContent>
+
+      {/* SIGN UP */}
       <TabsContent value="signup">
         <Card>
           <CardHeader>
@@ -102,28 +230,58 @@ const LoginForm = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="signup-name">Name</Label>
-              <Input id="signup-name" type="text" />
+              <Label>Name</Label>
+              <Input
+                type="text"
+                onChange={(e) => setSignupName(e.target.value)}
+                className={signupNameError ? "border-red-500" : ""}
+              />
+              {signupNameError && (
+                <div className="text-red-500 text-xs">{signupNameError}</div>
+              )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-username">Username</Label>
-              <Input id="signup-username" type="text" />
+              <Label>Username</Label>
+              <Input
+                type="text"
+                onChange={(e) => setSignupUsername(e.target.value)}
+                className={signupUsernameError ? "border-red-500" : ""}
+              />
+              {signupUsernameError && (
+                <div className="text-red-500 text-xs">
+                  {signupUsernameError}
+                </div>
+              )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-email">Email</Label>
-              <Input id="signup-email" type="email" />
+              <Label>Email</Label>
+              <Input
+                type="email"
+                onChange={(e) => setSignupEmail(e.target.value)}
+                className={signupEmailError ? "border-red-500" : ""}
+              />
+              {signupEmailError && (
+                <div className="text-red-500 text-xs">{signupEmailError}</div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signup-gender">Gender</Label>
-              <Select required>
+              <Label>Gender</Label>
+              <Select
+                onValueChange={setSignupGender}
+                required
+                className={signupGenderError ? "border-red-500" : ""}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
                 </SelectContent>
               </Select>
+              {signupGenderError && (
+                <div className="text-red-500 text-xs">{signupGenderError}</div>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Date of Birth</Label>
@@ -132,32 +290,41 @@ const LoginForm = () => {
                   <Button
                     variant="outline"
                     className={`w-full justify-start text-left font-normal ${
-                      !date && "text-muted-foreground"
-                    }`}
+                      !signupDate && "text-muted-foreground"
+                    } ${signupDateError ? "border-red-500" : ""}`}
                   >
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {signupDate ? (
+                      format(signupDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                    selected={signupDate}
+                    onSelect={(e) => setSignupDate(format(e, "yyyy-MM-dd"))}
+                    disabled={(signupDate) =>
+                      signupDate > new Date() ||
+                      signupDate < new Date("1900-01-01")
                     }
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
+              {signupDateError && (
+                <div className="text-red-500 text-xs">{signupDateError}</div>
+              )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="signup-password">Password</Label>
+              <Label>Password</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  id="signup-password"
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  className={signupPasswordError ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
@@ -173,10 +340,17 @@ const LoginForm = () => {
                   )}
                 </Button>
               </div>
+              {signupPasswordError && (
+                <div className="text-red-500 text-xs">
+                  {signupPasswordError}
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button className="w-full">Sign Up</Button>
+            <Button className="w-full" onClick={() => handleSignup()}>
+              Sign Up
+            </Button>
             <div className="relative my-4 w-full">
               <Separator />
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">

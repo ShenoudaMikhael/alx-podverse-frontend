@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Circle } from "lucide-react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const PodcastDiscoveryCard = ({
   title,
@@ -23,6 +24,7 @@ const PodcastDiscoveryCard = ({
   imageUrl,
   isLive,
 }) => {
+  const router = useRouter();
   return (
     <Card className="h-full flex flex-col justify-between">
       <CardHeader className="px-4 py-4">
@@ -62,7 +64,16 @@ const PodcastDiscoveryCard = ({
             }
           />
         </div>
-        <Button size="sm" className="w-full mt-4">
+        <Button
+          onClick={() => {
+            if (isLive) {
+              router.push(`/podcast`);
+            }
+          }}
+          disabled={!isLive}
+          size="sm"
+          className="w-full mt-4"
+        >
           Tune In
         </Button>
       </CardFooter>

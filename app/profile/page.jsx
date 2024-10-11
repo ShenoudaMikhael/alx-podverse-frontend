@@ -1,12 +1,10 @@
 "use client";
 import Navbar from "@/components/Navbar";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Edit, UserRoundPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UpdateIcon } from "@radix-ui/react-icons";
 import {
   Carousel,
   CarouselContent,
@@ -14,8 +12,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import PodcastDiscoveryCard from "@/components/PodcastDiscoveryCard";
 import ProfilePastPodcastCard from "@/components/ProfilePastPodcastCard";
+import ProfileUpcomingPodcastCard from "@/components/ProfileUpcomingPodcastCard";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import EditProfileDialog from "@/components/EditProfileDialog";
+import ProfileList from "@/components/ProfileList";
 
 const podcasts = [
   {
@@ -86,6 +88,46 @@ const podcasts = [
 ];
 
 const page = () => {
+  const [profilePicture, setProfilePicture] = useState(
+    "https://avatar.iran.liara.run/public"
+  );
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
+  const [name, setName] = useState("Abdelrahman Hany");
+  const [username, setUsername] = useState("abduuhany");
+  const [email, setEmail] = useState("abdu.hany@gmail.com");
+  const [password, setPassword] = useState("123456");
+  const [DOB, setDOB] = useState("2022-01-02");
+  const [gender, setGender] = useState("Male");
+  const [pastPodcasts, setPastPodcasts] = useState(podcasts);
+  const [upcomingPodcasts, setUpcomingPodcasts] = useState(podcasts);
+
+  const [followersList, setFollowersList] = useState([
+    { name: "Follower 01", image: "https://avatar.iran.liara.run/public" },
+    { name: "Follower 02", image: "https://avatar.iran.liara.run/public" },
+    { name: "Follower 03", image: "https://avatar.iran.liara.run/public" },
+  ]);
+  const [followingsList, setFollowingsList] = useState([
+    { name: "Following 01", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 02", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 03", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 04", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 05", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 06", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 07", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 08", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 09", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 10", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 11", image: "https://avatar.iran.liara.run/public" },
+    { name: "Following 12", image: "https://avatar.iran.liara.run/public" },
+  ]);
+
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setProfilePictureFile(file);
+      setProfilePicture(URL.createObjectURL(file));
+    }
+  };
   return (
     <>
       <Navbar />
@@ -93,51 +135,66 @@ const page = () => {
       <div className="h-[calc(100vh-3.5rem)]">
         <div className="w-full  px-4 md:px-10 py-4">
           <Card className="mx-auto max-w-[250px]">
-            <CardHeader className="relative flex justify-center items-center">
-              <Avatar className="w-32 h-32">
-                <AvatarImage src="https://avatar.iran.liara.run/public"></AvatarImage>
+            <CardHeader className="relative justify-center items-center">
+              {/* Avatar Image */}
+              <Avatar className="w-32 h-32 mb-2">
+                <AvatarImage src={profilePicture}></AvatarImage>
               </Avatar>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute rounded-full top-[120px] right-[70px]"
-              >
-                <UserRoundPen className="h-5 w-5" />
-                <span className="sr-only">User menu</span>
-              </Button>
-              <h1 className="text-xl font-bold">Name</h1>
-              <h2>@username</h2>
+              {/* Change Profile Picture Button */}
+              <Label className="absolute top-[120px] right-[70px] cursor-pointer">
+                <div className="rounded-full bg-primary p-2 text-primary-foreground">
+                  <UserRoundPen className="h-5 w-5 mx-auto my-auto" />
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleProfilePictureChange}
+                />
+              </Label>
+
+              {/* Name & Username */}
+              <h1 className="text-xl font-bold">{name}</h1>
+              <h2>@{username}</h2>
             </CardHeader>
+
+            {/* Edit Profile Dialog */}
             <CardContent className="flex flex-col justify-center items-center gap-4">
-              <Button size="sm" className="relative font-light flex gap-2">
-                <p>Edit profile</p>
-                <Edit className="h-5 w-5" />
-              </Button>
+              <EditProfileDialog
+                name={name}
+                setName={setName}
+                username={username}
+                setUsername={setUsername}
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                DOB={DOB}
+                setDOB={setDOB}
+                gender={gender}
+                setGender={setGender}
+              />
+              {/* Followers & Following List */}
               <div className="flex w-full justify-around">
-                <div className="text-center">
-                  <p>300</p>
-                  <p>Followers</p>
-                </div>
-                <div className="text-center">
-                  <p>300</p>
-                  <p>Following</p>
-                </div>
+                <ProfileList listName="Followers" list={followersList} />
+                <ProfileList listName="Following" list={followingsList} />
               </div>
             </CardContent>
           </Card>
         </div>
+
         {/* Current/Upcoming Podcasts */}
         <div className="w-full p-4 md:p-10 flex flex-col gap-4">
           <h1 className="text-xl font-bold">Current/Upcoming Podcasts</h1>
           <div className="px-10">
             <Carousel className="w-full">
               <CarouselContent className="-ml-1">
-                {podcasts.map((podcast, i) => (
+                {upcomingPodcasts.map((podcast, i) => (
                   <CarouselItem
                     key={i}
                     className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
                   >
-                    <PodcastDiscoveryCard
+                    <ProfileUpcomingPodcastCard
                       title={podcast.title}
                       description={podcast.description}
                       host={podcast.host}
@@ -145,6 +202,8 @@ const page = () => {
                       category={podcast.category}
                       imageUrl={podcast.imageUrl}
                       isLive={podcast.isLive}
+                      upcomingPodcasts={upcomingPodcasts}
+                      setUpcomingPodcasts={setUpcomingPodcasts}
                     />
                   </CarouselItem>
                 ))}
@@ -154,13 +213,14 @@ const page = () => {
             </Carousel>
           </div>
         </div>
+
         {/* Past Podcasts */}
         <div className="w-full p-4 md:p-10 flex flex-col gap-4">
           <h1 className="text-xl font-bold">Past Podcasts</h1>
           <div className="px-10">
             <Carousel className="w-full">
               <CarouselContent className="-ml-1">
-                {podcasts.map((podcast, i) => (
+                {pastPodcasts.map((podcast, i) => (
                   <CarouselItem
                     key={i}
                     className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"

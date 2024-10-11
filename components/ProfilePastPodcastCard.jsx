@@ -41,7 +41,7 @@ const ProfilePastPodcastCard = ({
       <CardFooter className="flex-col px-4 pb-4">
         <div className="flex items-center w-full justify-between">
           <Badge variant="outline">{category}</Badge>
-          <div className="flex items-center gap-2">
+          <div className="text-xs flex items-center gap-2">
             <Calendar />
             12-12-2022
           </div>
