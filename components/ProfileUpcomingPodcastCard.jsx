@@ -19,6 +19,7 @@ const ProfileUpcomingPodcastCard = ({
   category,
   imageUrl,
   isLive,
+  startDate,
   upcomingPodcasts,
   setUpcomingPodcasts,
 }) => {
@@ -48,7 +49,7 @@ const ProfileUpcomingPodcastCard = ({
         <div className="flex flex-col gap-4 items-center w-full justify-between">
           <div className="flex w-full justify-between">
             <Badge variant="outline">{category}</Badge>
-            {!isLive && <Badge variant="outline">12-12-2022</Badge>}
+            {!isLive && <Badge variant="outline">{startDate}</Badge>}
             <Circle
               fill={isLive ? "red" : "gray"}
               className={
@@ -59,15 +60,19 @@ const ProfileUpcomingPodcastCard = ({
           </div>
 
           <div className="flex  items-center gap-2">
-            <EditPodcastDialog
-              title={title}
-              description={description}
-              category={category}
-              imageUrl={imageUrl}
-              isLive={isLive}
-              upcomingPodcasts={upcomingPodcasts}
-              setUpcomingPodcasts={setUpcomingPodcasts}
-            />
+            {!isLive && (
+              <EditPodcastDialog
+                title={title}
+                description={description}
+                category={category}
+                imageUrl={imageUrl}
+                isLive={isLive}
+                startDate={startDate}
+                upcomingPodcasts={upcomingPodcasts}
+                setUpcomingPodcasts={setUpcomingPodcasts}
+              />
+            )}
+
             <Button size="sm" className={`${isLive ? "hidden" : ""}`}>
               Go Live
             </Button>

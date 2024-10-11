@@ -28,6 +28,7 @@ const podcasts = [
     category: "Technology",
     imageUrl: "https://placehold.co/1470x980/jpg",
     isLive: true,
+    startDate: "2022-09-01",
   },
   {
     title: "Science Today",
@@ -36,6 +37,8 @@ const podcasts = [
     listeners: "950",
     category: "Science",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "Entertainment Weekly",
@@ -44,6 +47,8 @@ const podcasts = [
     listeners: "1.5k",
     category: "Entertainment",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "Political Roundup",
@@ -52,6 +57,8 @@ const podcasts = [
     listeners: "800",
     category: "Politics",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "Health & Wellness",
@@ -60,6 +67,8 @@ const podcasts = [
     listeners: "1.3k",
     category: "Health",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "Business Buzz",
@@ -68,6 +77,8 @@ const podcasts = [
     listeners: "1.1k",
     category: "Business",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "History Uncovered",
@@ -76,6 +87,8 @@ const podcasts = [
     listeners: "750",
     category: "History",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
   {
     title: "True Crime Chronicles",
@@ -84,6 +97,8 @@ const podcasts = [
     listeners: "2.0k",
     category: "True Crime",
     imageUrl: "https://placehold.co/1470x980/jpg",
+    isLive: false,
+    startDate: "2022-09-01",
   },
 ];
 
@@ -192,7 +207,7 @@ const page = () => {
                 {upcomingPodcasts.map((podcast, i) => (
                   <CarouselItem
                     key={i}
-                    className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
+                    className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
                   >
                     <ProfileUpcomingPodcastCard
                       title={podcast.title}
@@ -202,6 +217,7 @@ const page = () => {
                       category={podcast.category}
                       imageUrl={podcast.imageUrl}
                       isLive={podcast.isLive}
+                      startDate={podcast.startDate}
                       upcomingPodcasts={upcomingPodcasts}
                       setUpcomingPodcasts={setUpcomingPodcasts}
                     />
@@ -223,7 +239,7 @@ const page = () => {
                 {pastPodcasts.map((podcast, i) => (
                   <CarouselItem
                     key={i}
-                    className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
+                    className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
                   >
                     <ProfilePastPodcastCard
                       title={podcast.title}
@@ -232,6 +248,7 @@ const page = () => {
                       listeners={podcast.listeners}
                       category={podcast.category}
                       imageUrl={podcast.imageUrl}
+                      startDate={podcast.startDate}
                       isLive={podcast.isLive}
                     />
                   </CarouselItem>

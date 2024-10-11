@@ -19,14 +19,17 @@ import {
   SelectValue,
   SelectContent,
 } from "./ui/select";
-import { UploadIcon } from "lucide-react";
+import { CalendarIcon, UploadIcon, Image } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "./ui/calendar";
+import { format } from "date-fns";
 
 const EditPodcastDialog = ({
   title,
   description,
   category,
   imageUrl,
-  isLive,
+  startDate,
   upcomingPodcasts,
   setUpcomingPodcasts,
 }) => {
@@ -34,6 +37,9 @@ const EditPodcastDialog = ({
   const [newDescription, setNewDescription] = useState(description);
   const [newCategory, setNewCategory] = useState(category);
   const [newImageUrl, setNewImageUrl] = useState(imageUrl);
+  const [newImageObject, setNewImageObject] = useState(null);
+  const [newImageName, setNewImageName] = useState("");
+  const [newStartDate, setNewStartDate] = useState(startDate);
   const [editPodcastDialogOpen, setEditPodcastDialogOpen] = useState(false);
 
   const handleSave = () => {
@@ -42,26 +48,29 @@ const EditPodcastDialog = ({
         podcast.title === title
           ? {
               ...podcast,
-              title: newTitle,
-              description: newDescription,
-              category: newCategory,
-              imageUrl: newImageUrl,
+              title: newTitle ? newTitle : podcast.title,
+              description: newDescription
+                ? newDescription
+                : podcast.description,
+              category: newCategory ? newCategory : podcast.category,
+              imageUrl: newImageUrl ? newImageUrl : podcast.imageUrl,
+              startDate: newStartDate ? newStartDate : podcast.startDate,
             }
           : podcast
       )
     );
     setEditPodcastDialogOpen(false);
   };
+
   const handlePodcastImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setNewImageUrl(e.target.result);
-      };
-      reader.readAsDataURL(file);
+      setNewImageUrl(URL.createObjectURL(file));
+      setNewImageObject(file);
+      setNewImageName(file.name);
     }
   };
+
   return (
     <Dialog
       open={editPodcastDialogOpen}
@@ -115,10 +124,45 @@ const EditPodcastDialog = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Start Date field */}
+          <div>
+            <Label className="text-md">Start Date</Label>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={`w-full justify-start text-left font-normal ${
+                    !newStartDate && "text-muted-foreground"
+                  } `}
+                >
+                  {newStartDate ? newStartDate : <span>Pick a date</span>}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={newStartDate}
+                  onSelect={(e) => setNewStartDate(format(e, "yyyy-MM-dd"))}
+                  disabled={(newStartDate) =>
+                    newStartDate < new Date() ||
+                    newStartDate < new Date("1900-01-01")
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Image field */}
           <div>
             <Label>
-              <div className="cursor-pointer border-2 border-dashed p-4">
-                Upload New Picture
+              Podcast Picture
+              <div className="flex items-center gap-2 cursor-pointer border-2 border-dashed p-4">
+                <Image />
+                {newImageName === "" ? "Upload New Picture" : newImageName}
               </div>
               <Input
                 type="file"
@@ -129,6 +173,7 @@ const EditPodcastDialog = ({
             </Label>
           </div>
         </div>
+
         {/* Save button */}
         <DialogFooter>
           <Button onClick={handleSave}>Save changes</Button>
