@@ -16,11 +16,9 @@ import Image from "next/image";
 const ProfilePastPodcastCard = ({
   title,
   description,
-  host,
-  listeners,
   category,
   imageUrl,
-  isLive,
+  startDate,
 }) => {
   return (
     <Card className="h-full flex flex-col justify-between">
@@ -43,7 +41,7 @@ const ProfilePastPodcastCard = ({
           <Badge variant="outline">{category}</Badge>
           <div className="text-xs flex items-center gap-2">
             <Calendar />
-            12-12-2022
+            {startDate}
           </div>
         </div>
       </CardFooter>

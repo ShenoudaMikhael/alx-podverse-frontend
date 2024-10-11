@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import Cookies from "js-cookie";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +65,7 @@ const LoginForm = () => {
     return password.length >= 8;
   };
 
-  const handleSignin = () => {
+  const handleSignin = async () => {
     let isValid = true;
 
     if (!signinEmail || !validateEmail(signinEmail)) {
@@ -82,11 +83,27 @@ const LoginForm = () => {
     }
 
     if (isValid) {
-      console.log(signinEmail, signinPassword);
+      const loginResponse = await fetch("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: signinEmail,
+          password: signinPassword,
+        }),
+      });
+      if (loginResponse.ok) {
+        // setting the token in cookies
+        const token = await loginResponse.json();
+        Cookies.set("token", token.token, { expires: 7 });
+      } else {
+        console.log("Failed to log in user");
+      }
     }
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     let isValid = true;
 
     if (!signupName || signupName.trim() === "") {
@@ -133,14 +150,49 @@ const LoginForm = () => {
 
     // if all fields are valid
     if (isValid) {
-      console.log(
-        signupName,
-        signupUsername,
-        signupEmail,
-        signupGender,
-        signupDate,
-        signupPassword
+      // Creating a new user in backend
+      const signupResponse = await fetch(
+        "http://localhost:3001/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: signupName,
+            username: signupUsername,
+            email: signupEmail,
+            gender: signupGender === "Male" ? "1" : "0",
+            dob: signupDate,
+            password: signupPassword,
+          }),
+        }
       );
+
+      // Signing in with new user credentials in backend
+      if (signupResponse.ok) {
+        console.log("User created successfully");
+        const loginResponse = await fetch("http://localhost:3001/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: signupEmail,
+            password: signupPassword,
+          }),
+        });
+
+        if (loginResponse.ok) {
+          // setting the token in cookies
+          const { token } = await loginResponse.json();
+          Cookies.set("token", token, { expires: 7 });
+        } else {
+          console.log("Failed to log in user");
+        }
+      } else {
+        console.log("Failed to create user");
+      }
     }
   };
 
