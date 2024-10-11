@@ -91,6 +91,7 @@ const page = () => {
   const [profilePicture, setProfilePicture] = useState(
     "https://avatar.iran.liara.run/public"
   );
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
   const [name, setName] = useState("Abdelrahman Hany");
   const [username, setUsername] = useState("abduuhany");
   const [email, setEmail] = useState("abdu.hany@gmail.com");
@@ -123,6 +124,7 @@ const page = () => {
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setProfilePictureFile(file);
       setProfilePicture(URL.createObjectURL(file));
     }
   };
