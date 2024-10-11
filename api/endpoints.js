@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const domain = "http://localhost:3001";
+const domain = "http://localhost:3000";
 const loginEndpoint = `${domain}/auth/login`;
 const registerEndpoint = `${domain}/auth/register`;
 const followersEndpoint = `${domain}/user/followers`;
@@ -10,7 +10,7 @@ const token = Cookies.get("token");
 
 class API {
 
-    async login(email, password) {
+    static async login(email, password) {
         const response = await fetch(loginEndpoint, {
             method: "POST",
             headers: {
@@ -22,7 +22,20 @@ class API {
             }),
         });
 
-        return response.json();
+        return response;
+    }
+    static async register(data) {
+        const response = await fetch(registerEndpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data
+            }),
+        });
+
+        return response;
     }
 }
 

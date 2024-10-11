@@ -31,6 +31,7 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import Cookies from "js-cookie";
+import API from "@/api/endpoints";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -83,22 +84,25 @@ const LoginForm = () => {
     }
 
     if (isValid) {
-      const loginResponse = await fetch("http://localhost:3001/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: signinEmail,
-          password: signinPassword,
-        }),
-      });
+      // const loginResponse = await fetch("http://localhost:3001/auth/login", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email: signinEmail,
+      //     password: signinPassword,
+      //   }),
+      // });
+      const loginResponse = await API.login(signinEmail, signinPassword)
+      console.log(loginResponse);
       if (loginResponse.ok) {
         // setting the token in cookies
         const token = await loginResponse.json();
         Cookies.set("token", token.token, { expires: 7 });
       } else {
         console.log("Failed to log in user");
+        setSigninPasswordError(loginResponse["msg"])
       }
     }
   };
@@ -151,42 +155,53 @@ const LoginForm = () => {
     // if all fields are valid
     if (isValid) {
       // Creating a new user in backend
-      const signupResponse = await fetch(
-        "http://localhost:3001/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: signupName,
-            username: signupUsername,
-            email: signupEmail,
-            gender: signupGender === "Male" ? "1" : "0",
-            dob: signupDate,
-            password: signupPassword,
-          }),
-        }
-      );
+      const signupResponse = await API.register({
+        name: signupName,
+        username: signupUsername,
+        email: signupEmail,
+        gender: signupGender === "Male" ? "1" : "0",
+        dob: signupDate,
+        password: signupPassword,
+      });
+      // const signupResponse = await fetch(
+      //   "http://localhost:3001/auth/register",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       name: signupName,
+      //       username: signupUsername,
+      //       email: signupEmail,
+      //       gender: signupGender === "Male" ? "1" : "0",
+      //       dob: signupDate,
+      //       password: signupPassword,
+      //     }),
+      //   }
+      // );
 
       // Signing in with new user credentials in backend
-      if (signupResponse.ok) {
+      console.log(signupResponse.status);
+      if (signupResponse.status === 201) {
         console.log("User created successfully");
-        const loginResponse = await fetch("http://localhost:3001/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: signupEmail,
-            password: signupPassword,
-          }),
-        });
-
+        const loginResponse = await API.login(signupEmail, signupPassword);
+        // const loginResponse = await fetch("http://localhost:3001/auth/login", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     email: signupEmail,
+        //     password: signupPassword,
+        //   }),
+        // });
+        console.log('loginResponse', loginResponse);
         if (loginResponse.ok) {
           // setting the token in cookies
           const { token } = await loginResponse.json();
           Cookies.set("token", token, { expires: 7 });
+          location.href = '/homepage'
         } else {
           console.log("Failed to log in user");
         }
@@ -341,9 +356,8 @@ const LoginForm = () => {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`w-full justify-start text-left font-normal ${
-                      !signupDate && "text-muted-foreground"
-                    } ${signupDateError ? "border-red-500" : ""}`}
+                    className={`w-full justify-start text-left font-normal ${!signupDate && "text-muted-foreground"
+                      } ${signupDateError ? "border-red-500" : ""}`}
                   >
                     {signupDate ? (
                       format(signupDate, "PPP")
