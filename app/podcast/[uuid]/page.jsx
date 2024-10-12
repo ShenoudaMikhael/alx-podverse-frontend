@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import HostControlsCard from "@/components/HostControlsCard";
 import PodcastDetailsCard from "@/components/PodcastDetailsCard";
@@ -8,27 +8,77 @@ import ListenerControlsCard from "@/components/ListenerControlsCard";
 import ListUser from "@/components/ListUser";
 import LiveChat from "@/components/LiveChat";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import API from "@/api/endpoints";
 
-const podCastDetails = {
-    title: "Tech Talks",
-    description:
-        "This is a very good podcast about technology and anyone interested in joining should feel free to",
-    HostName: "Abdulrahman Hany",
-    Category: "Technology",
-};
+// const podCastDetails = {
+//     title: "Tech Talks",
+//     description:
+//         "This is a very good podcast about technology and anyone interested in joining should feel free to",
+//     HostName: "Abdulrahman Hany",
+//     Category: "Technology",
+// };
 
 const page = ({ params }) => {
-    console.log('params', params)
+    const [isLoaded, setIsLoaded] = useState(null);
     const [podcastId, setPodcastId] = useState(null);
-    setPodcastId(params.id);
-
-
+    const [podCastDetails, setPodCastDetails] = useState(null);
+    const [userId, setuserId] = useState(null);
     const [isHost, setIsHost] = useState(false);
-    const host = {
-        name: "Abdulrahman Hany",
-        email: "5a9kz@example.com",
-        image: "https://i.pravatar.cc/500?img=2",
-    };
+    const [isLive, setIsLive] = useState(false);
+    const [host, setHost] = useState(false);
+
+    // const host = {
+    //     name: "Abdulrahman Hany",
+    //     email: "5a9kz@example.com",
+    //     image: "https://i.pravatar.cc/500?img=2",
+    // };
+
+
+    useEffect(() => {
+        console.log('params', params.uuid)
+        setPodcastId(params.uuid);
+        console.log('podcastId', podcastId);
+        API.getPodcast(params.uuid).then(response => {
+            console.log(response);
+            if (response.ok) {
+                response.json().then(data => {
+                    console.log(data);
+                    setPodCastDetails(
+                        {
+                                title:data.podcast.title,
+                                description:data.podcast.description,
+                                HostName:data.podcast.user.name,
+                                Category:data.podcast.cat.name,
+                            }
+                        
+                        );
+                    setuserId(data.user_id);
+                    setIsHost(data.podcast.user_id == data.user_id);
+                    // setIsLive(data.podcast.is_live)
+                    setIsLive(true);
+                    setHost(
+
+                        {
+                            email: data.podcast.user.email,
+                            name: data.podcast.user.name,
+                            image: data.podcast.user.image,
+                        }
+                    )
+
+
+                    setIsLoaded(true);
+
+
+
+                })
+            } else if (response.status === 404) location.href = '/';
+            else if (response.status === 401) location.href = '/';
+        })
+
+
+    }, [])
+
+
     const listeners = [
         { name: "User 1", image: "https://i.pravatar.cc/500?img=3" },
         { name: "User 2", image: "https://i.pravatar.cc/500?img=4" },
@@ -44,7 +94,7 @@ const page = ({ params }) => {
         { name: "User 12", image: "https://i.pravatar.cc/500?img=14" },
     ];
 
-    return (
+    return (!isLoaded ? <><h1>Loading...!</h1></> : (!isLive ? <><h1>havn\'t started yet...!</h1></> :
         <div>
             <Navbar />
             <div className="p-4 md:p-10 h-[calc(100vh-3.5rem)] w-full flex flex-col md:flex-row ">
@@ -93,6 +143,7 @@ const page = ({ params }) => {
                 </div>
             </div>
         </div>
+    )
     );
 };
 

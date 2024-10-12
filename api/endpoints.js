@@ -7,6 +7,7 @@ const isLoggedInEndpoint = `${domain}/auth/isLoggedIn`;
 const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
+const getPodcastEndpoint = `${domain}/podcast`;
 
 const token = Cookies.get("token");
 
@@ -63,6 +64,18 @@ class API {
 
             },
             body: JSON.stringify({...data}),
+        });
+
+        return response;
+    }
+    static async getPodcast(uuid) {
+        const response = await fetch(`${getPodcastEndpoint}/${uuid}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+
+            },
         });
 
         return response;
