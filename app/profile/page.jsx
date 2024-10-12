@@ -21,6 +21,7 @@ import ProfileList from "@/components/ProfileList";
 import { useRouter } from "next/navigation";
 import API from "@/api/endpoints";
 import { toast } from "sonner";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const podcasts = [
   {
@@ -178,9 +179,7 @@ const page = () => {
     }
   };
   return !loaded ? (
-    <div className="w-screen h-screen flex justify-center items-center">
-      <h1 className="text-lg font-bold">Loading...</h1>
-    </div>
+    <LoadingScreen text="Loading Profile..." />
   ) : (
     <>
       <Navbar />
