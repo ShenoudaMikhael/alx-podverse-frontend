@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import HostControlsCard from "@/components/HostControlsCard";
 import PodcastDetailsCard from "@/components/PodcastDetailsCard";
@@ -18,6 +18,12 @@ const podCastDetails = {
 };
 
 const page = () => {
+
+  useEffect(()=>{
+    location.href = '/homepage';
+  },[]);
+
+
   const [isHost, setIsHost] = useState(false);
   const host = {
     name: "Abdulrahman Hany",
