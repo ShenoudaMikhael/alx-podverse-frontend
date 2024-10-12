@@ -63,19 +63,20 @@ class API {
                 'x-auth-token': token
 
             },
-            body: JSON.stringify({...data}),
+            body: JSON.stringify({ ...data }),
         });
 
         return response;
     }
-    static async getPodcast(uuid) {
+    static async postPodcast(uuid, socket_current_id) {
         const response = await fetch(`${getPodcastEndpoint}/${uuid}`, {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 'x-auth-token': token
 
             },
+            body: JSON.stringify({ socket_current_id })
         });
 
         return response;

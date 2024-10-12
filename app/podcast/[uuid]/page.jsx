@@ -19,7 +19,6 @@ import SocketClient from "@/api/socketClient";
 //     HostName: "Abdulrahman Hany",
 //     Category: "Technology",
 // };
-const socket = SocketClient.socket;
 
 const page = ({ params }) => {
     const [isLoaded, setIsLoaded] = useState(null);
@@ -40,11 +39,12 @@ const page = ({ params }) => {
 
     useEffect(() => {
 
-
+        const socket = SocketClient.getInstance();
         setPodcastId(params.uuid);
-        API.getPodcast(params.uuid).then(response => {
+        API.postPodcast(params.uuid, socket.id).then(response => {
             if (response.ok) {
                 response.json().then(data => {
+                    console.log(data);
                     setPodCastDetails(
                         {
                             title: data.podcast.title,
@@ -59,8 +59,8 @@ const page = ({ params }) => {
                     setIsHost(data.podcast.user_id == data.user_id);
 
                     // TODO:
-                    // setIsLive(data.podcast.is_live)
-                    setIsLive(true);
+                    setIsLive(data.podcast.is_live)
+                    // setIsLive(true);
 
 
                     setHost({
@@ -131,7 +131,7 @@ const page = ({ params }) => {
 
                     {/* Live Chat */}
                     <div className="p-2 grow">
-                        <LiveChat socket={socket} room={podcastId} uname={userName.name} />
+                        <LiveChat room={podcastId} uname={userName.name} />
                     </div>
                 </div>
 
