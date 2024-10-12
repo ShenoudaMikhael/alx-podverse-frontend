@@ -1,4 +1,5 @@
 "use client";
+import API from "@/api/endpoints";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,14 +20,31 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
-  const [startDate, setStartDate] = useState();
+
+  const [loaded, setLoaded] = useState(false)
+  useEffect(() => {
+    console.log('use effect called..!');
+    API.isLoggedIn().then(result => {
+      if (result.ok) {
+        setLoaded(true)
+      } else {
+        location.href = '/';
+      }
+    })
+  }, [])
+
+
+
+
+
+  const [startDate, setStartDate] = useState(new Date('2024', '9', '20').toLocaleDateString());
   const [goLiveNow, setGoLiveNow] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("Test");
+  const [description, setDescription] = useState("test");
+  const [category, setCategory] = useState("test");
   const [imageObject, setImageObject] = useState(null);
   const [imageName, setImageName] = useState("");
 
@@ -36,7 +54,42 @@ const page = () => {
     setImageName(selectedFile.name); // Update file name state
   };
 
-  return (
+
+  const submitForm = () => {
+    console.log(
+      title,
+      description,
+      category,
+      startDate,
+      goLiveNow,
+      imageName,
+      imageObject,
+    );
+    const data = {
+      title: title,
+      description: description,
+      start_date: startDate,
+      cat_id: 1, //category - fixed number for now
+      is_live: goLiveNow
+      //  imageName,
+      // : imageObject,
+    }
+    API.createPodcast(data).then(async (response) => {
+      //handle correct response
+      console.log(response);
+      const result = await response.json()
+
+      if (goLiveNow) {
+        location.href = `/podcast/${result.podcast.uuid}`
+      }
+
+    })
+
+
+  }
+
+
+  return !loaded ? <><h1>Loading...</h1></> : (
     <div className="min-h-screen">
       <Navbar />
       <div className="h-[calc(100vh-3.5rem)] p-10">
@@ -88,9 +141,8 @@ const page = () => {
               <PopoverTrigger disabled={goLiveNow} asChild>
                 <Button
                   variant="outline"
-                  className={`w-full justify-start text-left font-normal ${
-                    !startDate && "text-muted-foreground"
-                  } `}
+                  className={`w-full justify-start text-left font-normal ${!startDate && "text-muted-foreground"
+                    } `}
                 >
                   {startDate ? (
                     format(startDate, "PPP")
@@ -129,17 +181,7 @@ const page = () => {
             </Label>
           </div>
           <Button
-            onClick={() => {
-              console.log(
-                title,
-                description,
-                category,
-                imageName,
-                imageObject,
-                startDate,
-                goLiveNow
-              );
-            }}
+            onClick={submitForm}
           >
             Save changes
           </Button>
