@@ -22,18 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import Cookies from "js-cookie";
 import API from "@/api/endpoints";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { DatePicker } from "./DatePicker";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -193,7 +186,7 @@ const LoginForm = () => {
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
-    <Tabs defaultValue="signin" className="w-[400px]">
+    <Tabs defaultValue="signin" className="w-full max-w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="signin">Sign In</TabsTrigger>
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -331,35 +324,7 @@ const LoginForm = () => {
             </div>
             <div className="space-y-2">
               <Label>Date of Birth</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${
-                      !signupDate && "text-muted-foreground"
-                    } ${signupDateError ? "border-red-500" : ""}`}
-                  >
-                    {signupDate ? (
-                      format(signupDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={signupDate}
-                    onSelect={(e) => setSignupDate(format(e, "yyyy-MM-dd"))}
-                    disabled={(signupDate) =>
-                      signupDate > new Date() ||
-                      signupDate < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker date={signupDate} setDate={setSignupDate} />
               {signupDateError && (
                 <div className="text-red-500 text-xs">{signupDateError}</div>
               )}

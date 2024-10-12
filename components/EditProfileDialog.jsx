@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
 import { toast } from "sonner";
 import API from "@/api/endpoints";
+import { DatePicker } from "./DatePicker";
 
 const EditProfileDialog = ({
   name,
@@ -173,34 +174,7 @@ const EditProfileDialog = ({
               {/* Date of Birth field */}
               <div className="space-y-2">
                 <Label>Date of Birth</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={`w-full justify-start text-left font-normal ${
-                        !newDOB && "text-muted-foreground"
-                      } `}
-                    >
-                      {newDOB ? (
-                        format(newDOB, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={newDOB}
-                      onSelect={(e) => setNewDOB(format(e, "yyyy-MM-dd"))}
-                      disabled={(newDOB) =>
-                        newDOB > new Date() || newDOB < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DatePicker date={newDOB} setDate={setNewDOB} />
               </div>
 
               {/* Gender field */}

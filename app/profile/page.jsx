@@ -121,7 +121,7 @@ const page = () => {
               setName(data.name);
               setUsername(data.username);
               setEmail(data.email);
-              setDOB(data.dob);
+              setDOB(new Date(data.dob));
               setGender(data.gender === true ? "Male" : "Female");
               setProfilePicture(data.profilePicture);
               setPassword(data.password);
