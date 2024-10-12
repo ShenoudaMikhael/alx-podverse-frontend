@@ -33,6 +33,7 @@ import { format } from "date-fns";
 import Cookies from "js-cookie";
 import API from "@/api/endpoints";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -91,10 +92,15 @@ const LoginForm = () => {
         // setting the token in cookies
         const token = await loginResponse.json();
         Cookies.set("token", token.token, { expires: 7 });
+        toast.success("Logged in successfully", {
+          duration: 3000,
+        });
         router.push("/homepage");
       } else {
         // failed to log in
-        console.log("Failed to log in user");
+        toast.error("Invalid email or password", {
+          duration: 3000,
+        });
       }
     }
   };
@@ -164,13 +170,21 @@ const LoginForm = () => {
           // setting the token in cookies
           const { token } = await loginResponse.json();
           Cookies.set("token", token, { expires: 7 });
+          toast.success("Welcome to Podverse", {
+            duration: 3000,
+          });
           router.push("/homepage");
         } else {
           // Failed to log in
-          console.log("Failed to log in user");
+          toast.error("Failed to log in", {
+            duration: 3000,
+          });
         }
       } else {
         // Failed to create user
+        toast.error("Failed to create user", {
+          duration: 3000,
+        });
         console.log("Failed to create user");
       }
     }

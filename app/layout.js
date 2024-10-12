@@ -1,6 +1,7 @@
 import "./globals.css";
 import { archivo } from "./fonts/fonts";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Create Next App",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           {children}
+          <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>
