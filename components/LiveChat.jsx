@@ -13,10 +13,12 @@ const LiveChat = ({ room, uname }) => {
   const [username, setUsername] = useState(uname);
 
   useEffect(() => {
-    const socket = SocketClient.getInstance();
+    SocketClient.getInstance().then(socket => {
 
-    socket.on("chat message", (message) => {
-      setMessages((prev) => [...prev, `${message}`]);
+
+      socket.on("chat message", (message) => {
+        setMessages((prev) => [...prev, `${message}`]);
+      });
     });
   }, []);
 

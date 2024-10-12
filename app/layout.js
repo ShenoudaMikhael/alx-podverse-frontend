@@ -1,6 +1,7 @@
 import "./globals.css";
 import { archivo } from "./fonts/fonts";
 import { ThemeProvider } from "@/components/theme-provider";
+import Script from "next/script";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,6 +12,7 @@ export default function RootLayout({ children }) {
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${archivo.className} antialiased`}>
+        <Script src="/simplepeer.min.js"  />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
         >
           {children}
         </ThemeProvider>
+        {/* Use Next.js Script component to load simplepeer.min.js */}
       </body>
     </html>
   );
