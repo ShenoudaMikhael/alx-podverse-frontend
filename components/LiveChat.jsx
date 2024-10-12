@@ -6,15 +6,14 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Send } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
+import SocketClient from "@/api/socketClient";
 
-const socket = io.connect("http://localhost:3001", {
-  transports: ["websocket"],
-});
-
-const LiveChat = () => {
+// const socket = SocketClient.socket
+// console.log('chat component socket.id ',socket);
+const LiveChat = ({ socket, room, uname }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState("Abdu");
+  const [username, setUsername] = useState(uname);
 
   useEffect(() => {
     socket.on("chat message", (message) => {
@@ -25,7 +24,7 @@ const LiveChat = () => {
   const sendMessage = (event) => {
     event.preventDefault();
     if (message.trim()) {
-      socket.emit("chat message", message);
+      socket.emit("chat message", { message, room },);
       setMessage("");
     }
   };

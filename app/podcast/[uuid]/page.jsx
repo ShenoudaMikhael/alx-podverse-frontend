@@ -9,6 +9,8 @@ import ListUser from "@/components/ListUser";
 import LiveChat from "@/components/LiveChat";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import API from "@/api/endpoints";
+import Cookies from "js-cookie";
+import SocketClient from "@/api/socketClient";
 
 // const podCastDetails = {
 //     title: "Tech Talks",
@@ -17,12 +19,14 @@ import API from "@/api/endpoints";
 //     HostName: "Abdulrahman Hany",
 //     Category: "Technology",
 // };
+const socket = SocketClient.socket;
 
 const page = ({ params }) => {
     const [isLoaded, setIsLoaded] = useState(null);
     const [podcastId, setPodcastId] = useState(null);
     const [podCastDetails, setPodCastDetails] = useState(null);
     const [userId, setuserId] = useState(null);
+    const [userName, setUserName] = useState(null);
     const [isHost, setIsHost] = useState(false);
     const [isLive, setIsLive] = useState(false);
     const [host, setHost] = useState(false);
@@ -35,38 +39,45 @@ const page = ({ params }) => {
 
 
     useEffect(() => {
-        console.log('params', params.uuid)
+
+
         setPodcastId(params.uuid);
-        console.log('podcastId', podcastId);
         API.getPodcast(params.uuid).then(response => {
-            console.log(response);
             if (response.ok) {
                 response.json().then(data => {
-                    console.log(data);
                     setPodCastDetails(
                         {
-                                title:data.podcast.title,
-                                description:data.podcast.description,
-                                HostName:data.podcast.user.name,
-                                Category:data.podcast.cat.name,
-                            }
-                        
-                        );
+                            title: data.podcast.title,
+                            description: data.podcast.description,
+                            HostName: data.podcast.user.name,
+                            Category: data.podcast.cat.name,
+                        }
+
+                    );
                     setuserId(data.user_id);
+                    setUserName(data.me)
                     setIsHost(data.podcast.user_id == data.user_id);
+
+                    // TODO:
                     // setIsLive(data.podcast.is_live)
                     setIsLive(true);
-                    setHost(
 
-                        {
-                            email: data.podcast.user.email,
-                            name: data.podcast.user.name,
-                            image: data.podcast.user.image,
-                        }
-                    )
+
+                    setHost({
+                        email: data.podcast.user.email,
+                        name: data.podcast.user.name,
+                        image: data.podcast.user.image,
+                    })
 
 
                     setIsLoaded(true);
+                    // if (data.podcast.is_live) {
+                    console.log("Here");
+                    //socket chat.
+                    console.log(socket.id)
+                    socket.emit('join-podcast', params.uuid)
+
+                    // }
 
 
 
@@ -120,7 +131,7 @@ const page = ({ params }) => {
 
                     {/* Live Chat */}
                     <div className="p-2 grow">
-                        <LiveChat />
+                        <LiveChat socket={socket} room={podcastId} uname={userName.name} />
                     </div>
                 </div>
 
