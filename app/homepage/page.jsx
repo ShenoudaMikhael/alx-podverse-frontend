@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import API from "@/api/endpoints";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const page = () => {
   const router = useRouter();
@@ -213,6 +214,7 @@ const page = () => {
       if (result.ok) {
         setLoaded(true);
       } else {
+        toast.error("Please login first");
         router.push("/");
       }
     });
@@ -220,7 +222,7 @@ const page = () => {
 
   return !loaded ? (
     <div className="w-screen h-screen flex justify-center items-center">
-      <h1 className="text-2xl font-bold">Loading...</h1>
+      <h1 className="text-lg font-bold">Loading...</h1>
     </div>
   ) : (
     <div className="max-h-screen">

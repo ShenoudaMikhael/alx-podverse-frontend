@@ -12,15 +12,12 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    if (token) {
-      //check if logged in.
-      API.isLoggedIn().then(result => {
-        if (result.ok) {
-          router.push('/homepage');
-        }
-      })
-    }
+    //check if logged in.
+    API.isLoggedIn().then(result => {
+      if (result.ok) {
+        router.push('/homepage');
+      }
+    })
   }, []);
 
   return (
