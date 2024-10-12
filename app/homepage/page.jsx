@@ -16,8 +16,10 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import API from "@/api/endpoints";
+import { useRouter } from "next/navigation";
 
 const page = () => {
+  const router = useRouter();
   const [searchFilter, setSearchFilter] = useState("All");
 
   const categories = [
@@ -205,33 +207,22 @@ const page = () => {
     },
   ];
 
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    console.log('use effect called..!');
-    API.isLoggedIn().then(result => {
+    API.isLoggedIn().then((result) => {
       if (result.ok) {
-        setLoaded(true)
+        setLoaded(true);
       } else {
-        location.href = '/';
+        router.push("/");
       }
-    })
-  },[])
+    });
+  }, []);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  return !loaded ? <><h1>Loading</h1></> : (
+  return !loaded ? (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <h1 className="text-2xl font-bold">Loading...</h1>
+    </div>
+  ) : (
     <div className="max-h-screen">
       {/* Navbar */}
       <Navbar />
