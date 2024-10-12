@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import PodcastDiscoveryCard from "@/components/PodcastDiscoveryCard";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import API from "@/api/endpoints";
 
 const page = () => {
   const [searchFilter, setSearchFilter] = useState("All");
@@ -204,7 +205,33 @@ const page = () => {
     },
   ];
 
-  return (
+  const [loaded, setLoaded] = useState(false)
+  useEffect(() => {
+    console.log('use effect called..!');
+    API.isLoggedIn().then(result => {
+      if (result.ok) {
+        setLoaded(true)
+      } else {
+        location.href = '/';
+      }
+    })
+  },[])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  return !loaded ? <><h1>Loading</h1></> : (
     <div className="max-h-screen">
       {/* Navbar */}
       <Navbar />

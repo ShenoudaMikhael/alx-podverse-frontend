@@ -34,6 +34,26 @@ import Cookies from "js-cookie";
 import API from "@/api/endpoints";
 
 const LoginForm = () => {
+
+
+
+
+
+//check if logged in.
+API.isLoggedIn().then(result=>{
+  if (result.ok){
+    location.href = '/homepage'
+  }
+})
+
+
+
+
+
+
+
+
+
   const [showPassword, setShowPassword] = useState(false);
 
   // Sign In Credentials
@@ -55,6 +75,9 @@ const LoginForm = () => {
   const [signupGenderError, setSignupGenderError] = useState("");
   const [signupDateError, setSignupDateError] = useState("");
   const [signupPasswordError, setSignupPasswordError] = useState("");
+
+
+
 
   //  Validator functions
   const validateEmail = (email) => {
@@ -100,6 +123,8 @@ const LoginForm = () => {
         // setting the token in cookies
         const token = await loginResponse.json();
         Cookies.set("token", token.token, { expires: 7 });
+
+        location.href = '/homepage'
       } else {
         console.log("Failed to log in user");
         setSigninPasswordError(loginResponse["msg"])
