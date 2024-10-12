@@ -5,6 +5,7 @@ const loginEndpoint = `${domain}/auth/login`;
 const registerEndpoint = `${domain}/auth/register`;
 const isLoggedInEndpoint = `${domain}/auth/isLoggedIn`;
 const userEndpoint = `${domain}/user/profile`;
+const updateUserEndpoint = `${domain}/user/updateProfile`;
 const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
@@ -83,6 +84,20 @@ class API {
 
         return response;
 
+    }
+
+    static async updateProfile(data) {
+        const token = Cookies.get("token");
+        const response = await fetch(updateUserEndpoint, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+            body: JSON.stringify({ ...data }),
+        })
+
+        return response;
     }
 }
 

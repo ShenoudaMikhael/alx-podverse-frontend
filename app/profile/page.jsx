@@ -112,7 +112,7 @@ const page = () => {
   useEffect(() => {
     API.isLoggedIn().then((result) => {
       if (result.ok) {
-        setLoaded(true);
+        // get profile data
         API.getProfile().then((result) => {
           if (result.ok) {
             const response = result.json();
@@ -124,7 +124,10 @@ const page = () => {
               setGender(data.gender === true ? "Male" : "Female");
               setProfilePicture(data.profilePicture);
               setPassword(data.password);
+              setLoaded(true);
             });
+          } else {
+            toast.error("Failed to load User Data");
           }
         });
       } else {

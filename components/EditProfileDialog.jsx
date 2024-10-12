@@ -25,6 +25,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
+import { toast } from "sonner";
+import API from "@/api/endpoints";
 
 const EditProfileDialog = ({
   name,
@@ -51,15 +53,50 @@ const EditProfileDialog = ({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSave = () => {
+  // Save original values when the dialog opens
+  const handleDialogOpenChange = (isOpen) => {
+    if (isOpen) {
+      // If opening, store the original values
+      setNewName(name);
+      setNewUsername(username);
+      setNewEmail(email);
+      setNewDOB(DOB);
+      setNewGender(gender);
+    } else {
+      // If closing, reset to original values (discard unsaved changes)
+      setNewName(name);
+      setNewUsername(username);
+      setNewEmail(email);
+      setNewDOB(DOB);
+      setNewGender(gender);
+    }
+    setEditProfileDialogOpen(isOpen);
+  };
+
+  const handleSave = async () => {
     setName(newName);
     setUsername(newUsername);
     setEmail(newEmail);
     setDOB(newDOB);
     setGender(newGender);
     setEditProfileDialogOpen(false);
-    console.log(newName, newUsername, newEmail, newGender, newDOB);
-    console.log("Profile updated");
+    const response = await API.updateProfile({
+      name: newName === "" ? name : newName,
+      username: newUsername === "" ? username : newUsername,
+      email: newEmail === "" ? email : newEmail,
+      dob: newDOB === "" ? DOB : newDOB,
+      gender: newGender === "" ? gender : newGender === "Male" ? "1" : "0",
+    });
+    if (response.ok) {
+      toast.success("Profile updated successfully", {
+        duration: 3000,
+      });
+      setEditProfileDialogOpen(false);
+    } else {
+      toast.error("Failed to update profile", {
+        duration: 3000,
+      });
+    }
   };
 
   const handlePasswordChange = () => {
@@ -73,7 +110,7 @@ const EditProfileDialog = ({
   return (
     <Dialog
       open={editProfileDialogOpen}
-      onOpenChange={setEditProfileDialogOpen}
+      onOpenChange={handleDialogOpenChange} // Handle dialog open/close
     >
       <DialogTrigger asChild>
         <Button size="sm" className="font-light flex gap-2">
