@@ -99,13 +99,18 @@ const EditProfileDialog = ({
     }
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      console.log("Passwords do not match");
-      return;
+      toast.error("Passwords do not match");
+    } else {
+      const response = await API.updatePassword(oldPassword, newPassword);
+      if (response.ok) {
+        toast.success("Password changed successfully");
+      } else {
+        toast.error("Failed to change password");
+      }
+      setEditProfileDialogOpen(false);
     }
-    console.log("Password changed");
-    setEditProfileDialogOpen(false);
   };
   return (
     <Dialog
