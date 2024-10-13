@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import ProfileList from "@/components/ProfileList";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import API from "@/api/endpoints";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -108,6 +108,7 @@ const podcasts = [
 
 const page = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -133,7 +134,8 @@ const page = () => {
         });
       } else {
         toast.error("Please login first");
-        router.push("/");
+        console.log(pathname);
+        router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });
   }, []);

@@ -81,7 +81,7 @@ const Navbar = () => {
 
       {/* HAMBURGER MENU */}
       <div className="md:hidden flex items-center">
-        <Link href="/live">
+        <Link href="/create-podcast">
           <Button size="sm">Go Live</Button>
         </Link>
         {userAvatar}

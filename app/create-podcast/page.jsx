@@ -21,9 +21,12 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 const page = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     console.log("use effect called..!");
@@ -31,7 +34,7 @@ const page = () => {
       if (result.ok) {
         setLoaded(true);
       } else {
-        location.href = "/";
+        router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });
   }, []);
@@ -53,34 +56,39 @@ const page = () => {
   };
 
   const submitForm = () => {
-    console.log(imageObjectRef.current)
+    console.log(imageObjectRef.current);
     const data = new FormData();
 
-    data.append('data', JSON.stringify({
-      title,
-      description,
-      start_date: startDate,
-      cat_id: 1,
-      is_live: goLiveNow,
-      imageName: imageName
-    }));
-    data.append('file', imageObject);
-    console.log(data)
+    data.append(
+      "data",
+      JSON.stringify({
+        title,
+        description,
+        start_date: startDate,
+        cat_id: 1,
+        is_live: goLiveNow,
+        imageName: imageName,
+      })
+    );
+    data.append("file", imageObject);
+    console.log(data);
 
     API.createPodcast(data).then(async (response) => {
       //handle correct response
       console.log(response);
-      const result = await response.json()
+      const result = await response.json();
 
       if (goLiveNow) {
-        location.href = `/podcast/${result.podcast.uuid}`
+        location.href = `/podcast/${result.podcast.uuid}`;
       }
+    });
+  };
 
-    })
-
-  }
-
-return !loaded ? <><h1>Loading...</h1></> : (
+  return !loaded ? (
+    <>
+      <h1>Loading...</h1>
+    </>
+  ) : (
     <div className="min-h-screen">
       <Navbar />
       <div className="h-[calc(100vh-3.5rem)] p-10">
