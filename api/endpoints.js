@@ -10,6 +10,7 @@ const updatePasswordEndpoint = `${domain}/user/updatePassword`;
 const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
+const getPodcastEndpoint = `${domain}/podcast`;
 
 
 class API {
@@ -62,11 +63,24 @@ class API {
         const response = await fetch(createPodcastEndpoint, {
             method: "POST",
             headers: {
+                // "Content-Type": "multipart/form-data",
+                'x-auth-token': token,
+
+            },
+            body: data,
+        });
+
+        return response;
+    }
+    static async postPodcast(uuid, socket_current_id) {
+        const response = await fetch(`${getPodcastEndpoint}/${uuid}`, {
+            method: "POST",
+            headers: {
                 "Content-Type": "application/json",
                 'x-auth-token': token
 
             },
-            body: JSON.stringify({ ...data }),
+            body: JSON.stringify({ socket_current_id })
         });
 
         return response;

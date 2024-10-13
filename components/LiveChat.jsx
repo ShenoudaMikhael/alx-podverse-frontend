@@ -1,31 +1,33 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import io from "socket.io-client";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Send } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
+import SocketClient from "@/api/socketClient";
 
-const socket = io.connect("http://localhost:3001", {
-  transports: ["websocket"],
-});
-
-const LiveChat = () => {
+const LiveChat = ({ room, uname }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState("Abdu");
+  const [username, setUsername] = useState(uname);
 
   useEffect(() => {
-    socket.on("chat message", (message) => {
-      setMessages((prev) => [...prev, `${username}: ${message}`]);
+    SocketClient.getInstance().then(socket => {
+
+
+      socket.on("chat message", (message) => {
+        setMessages((prev) => [...prev, `${message}`]);
+      });
     });
   }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
+    const socket = SocketClient.getInstance();
+
     if (message.trim()) {
-      socket.emit("chat message", message);
+      socket.emit("chat message", { message: `${username}: ${message}`, room },);
       setMessage("");
     }
   };
