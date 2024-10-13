@@ -4,12 +4,14 @@ const domain = "http://localhost:3000";
 const loginEndpoint = `${domain}/auth/login`;
 const registerEndpoint = `${domain}/auth/register`;
 const isLoggedInEndpoint = `${domain}/auth/isLoggedIn`;
+const userEndpoint = `${domain}/user/profile`;
+const updateUserEndpoint = `${domain}/user/updateProfile`;
+const updatePasswordEndpoint = `${domain}/user/updatePassword`;
 const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
 const getPodcastEndpoint = `${domain}/podcast`;
 
-const token = Cookies.get("token");
 
 class API {
 
@@ -41,6 +43,7 @@ class API {
         return response;
     }
     static async isLoggedIn() {
+        const token = Cookies.get("token");
         const response = await fetch(isLoggedInEndpoint, {
             method: "POST",
             headers: {
@@ -56,6 +59,7 @@ class API {
 
 
     static async createPodcast(data) {
+        const token = Cookies.get("token");
         const response = await fetch(createPodcastEndpoint, {
             method: "POST",
             headers: {
@@ -78,6 +82,49 @@ class API {
             },
             body: JSON.stringify({ socket_current_id })
         });
+
+        return response;
+    }
+
+    static async getProfile() {
+        const token = Cookies.get("token");
+        const response = await fetch(userEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+
+            },
+        });
+
+        return response;
+
+    }
+
+    static async updateProfile(data) {
+        const token = Cookies.get("token");
+        const response = await fetch(updateUserEndpoint, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+            body: JSON.stringify({ ...data }),
+        })
+
+        return response;
+    }
+
+    static async updatePassword(oldPassword, newPassword) {
+        const token = Cookies.get("token");
+        const response = await fetch(updatePasswordEndpoint, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+            body: JSON.stringify({ oldPassword, newPassword }),
+        })
 
         return response;
     }
