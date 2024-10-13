@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const page = () => {
 
@@ -46,34 +46,32 @@ const page = () => {
   const [description, setDescription] = useState("test");
   const [category, setCategory] = useState("test");
   const [imageObject, setImageObject] = useState(null);
+  const imageObjectRef = useRef();
   const [imageName, setImageName] = useState("");
 
   const handleImageUpload = (event) => {
     const selectedFile = event.target.files[0];
+    imageObjectRef.current = selectedFile;
     setImageObject(selectedFile);
     setImageName(selectedFile.name); // Update file name state
   };
 
 
   const submitForm = () => {
-    console.log(
+    console.log(imageObjectRef.current)
+    const data = new FormData();
+
+    data.append('data', JSON.stringify({
       title,
       description,
-      category,
-      startDate,
-      goLiveNow,
-      imageName,
-      imageObject,
-    );
-    const data = {
-      title: title,
-      description: description,
       start_date: startDate,
-      cat_id: 1, //category - fixed number for now
-      is_live: goLiveNow
-      //  imageName,
-      // : imageObject,
-    }
+      cat_id: 1,
+      is_live: goLiveNow,
+      imageName: imageName
+    }));
+    data.append('file', imageObject);
+    console.log(data)
+
     API.createPodcast(data).then(async (response) => {
       //handle correct response
       console.log(response);
@@ -85,8 +83,8 @@ const page = () => {
 
     })
 
-
   }
+
 
 
   return !loaded ? <><h1>Loading...</h1></> : (

@@ -59,11 +59,11 @@ class API {
         const response = await fetch(createPodcastEndpoint, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                'x-auth-token': token
+                // "Content-Type": "multipart/form-data",
+                'x-auth-token': token,
 
             },
-            body: JSON.stringify({ ...data }),
+            body: data,
         });
 
         return response;
