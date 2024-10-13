@@ -157,6 +157,33 @@ class API {
 
         return response
     }
+
+    static async getFollowers() {
+        const token = Cookies.get("token");
+        const response = await fetch(followersEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async getFollowing() {
+        const token = Cookies.get("token");
+        const response = await fetch(followingEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
 }
 
 export default API

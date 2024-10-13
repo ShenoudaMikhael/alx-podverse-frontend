@@ -22,6 +22,7 @@ import { useRouter, usePathname } from "next/navigation";
 import API, { domain } from "@/api/endpoints";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
+import { set } from "date-fns";
 
 const podcasts = [
   {
@@ -114,7 +115,7 @@ const page = () => {
   useEffect(() => {
     API.isLoggedIn().then((result) => {
       if (result.ok) {
-        // get profile data
+        // Get Profile Data
         API.getProfile().then((result) => {
           if (result.ok) {
             const response = result.json();
@@ -130,11 +131,48 @@ const page = () => {
                   : "https://avatar.iran.liara.run/public"
               );
               setPassword(data.password);
-              setLoaded(true);
+
+              // Get followers list
+              API.getFollowers().then((result) => {
+                if (result.ok) {
+                  result.json().then((data) => {
+                    setFollowersList(
+                      data.followersList.map((item) => {
+                        return {
+                          name: item.follower.name,
+                          image: item.follower.profilePic
+                            ? item.follower.profilePic
+                            : "https://avatar.iran.liara.run/public",
+                        };
+                      })
+                    );
+
+                    // Get Followings List
+                    API.getFollowing().then((result) => {
+                      if (result.ok) {
+                        result.json().then((data) => {
+                          console.log(data);
+                          setFollowingsList(
+                            data.followingList.map((item) => {
+                              return {
+                                name: item.follower.name,
+                                image: item.follower.profilePic
+                                  ? item.follower.profilePic
+                                  : "https://avatar.iran.liara.run/public",
+                              };
+                            })
+                          );
+                          setLoaded(true);
+                        });
+                      } else {
+                        toast.error("Failed to load Followings Data");
+                      }
+                    });
+                  });
+                } else toast.error("Failed to load Followers Data");
+              });
             });
-          } else {
-            toast.error("Failed to load User Data");
-          }
+          } else toast.error("Failed to load User Data");
         });
       } else {
         toast.error("Please login first");
@@ -157,25 +195,8 @@ const page = () => {
   const [pastPodcasts, setPastPodcasts] = useState(podcasts);
   const [upcomingPodcasts, setUpcomingPodcasts] = useState(podcasts);
 
-  const [followersList, setFollowersList] = useState([
-    { name: "Follower 01", image: "https://avatar.iran.liara.run/public" },
-    { name: "Follower 02", image: "https://avatar.iran.liara.run/public" },
-    { name: "Follower 03", image: "https://avatar.iran.liara.run/public" },
-  ]);
-  const [followingsList, setFollowingsList] = useState([
-    { name: "Following 01", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 02", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 03", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 04", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 05", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 06", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 07", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 08", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 09", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 10", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 11", image: "https://avatar.iran.liara.run/public" },
-    { name: "Following 12", image: "https://avatar.iran.liara.run/public" },
-  ]);
+  const [followersList, setFollowersList] = useState([]);
+  const [followingsList, setFollowingsList] = useState([]);
 
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
