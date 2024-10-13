@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import ProfileList from "@/components/ProfileList";
 import { useRouter, usePathname } from "next/navigation";
-import API from "@/api/endpoints";
+import API, { domain } from "@/api/endpoints";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
 
@@ -124,7 +124,11 @@ const page = () => {
               setEmail(data.email);
               setDOB(new Date(data.dob));
               setGender(data.gender === true ? "Male" : "Female");
-              setProfilePicture(data.profilePicture);
+              setProfilePicture(
+                data.profilePic !== null
+                  ? `${domain}/${data.profilePic}`
+                  : "https://avatar.iran.liara.run/public"
+              );
               setPassword(data.password);
               setLoaded(true);
             });
@@ -176,6 +180,15 @@ const page = () => {
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      const data = new FormData();
+      data.append("profilePicture", file);
+      API.updateProfilePicture(data).then((result) => {
+        if (result.ok) {
+          toast.success("Profile Picture Updated");
+        } else {
+          toast.error("Failed to update Profile Picture");
+        }
+      });
       setProfilePictureFile(file);
       setProfilePicture(URL.createObjectURL(file));
     }
@@ -193,6 +206,7 @@ const page = () => {
               {/* Avatar Image */}
               <Avatar className="w-32 h-32 mb-2">
                 <AvatarImage
+                  className="object-cover"
                   src={
                     profilePicture
                       ? profilePicture
