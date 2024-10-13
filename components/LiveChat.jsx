@@ -22,9 +22,9 @@ const LiveChat = ({ room, uname }) => {
     });
   }, []);
 
-  const sendMessage = (event) => {
+  const sendMessage =async  (event) => {
     event.preventDefault();
-    const socket = SocketClient.getInstance();
+    const socket = await SocketClient.getInstance();
 
     if (message.trim()) {
       socket.emit("chat message", { message: `${username}: ${message}`, room },);
