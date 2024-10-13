@@ -1,5 +1,6 @@
 "use client";
 import API from "@/api/endpoints";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,28 +24,23 @@ import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 const page = () => {
-
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    console.log('use effect called..!');
-    API.isLoggedIn().then(result => {
+    console.log("use effect called..!");
+    API.isLoggedIn().then((result) => {
       if (result.ok) {
-        setLoaded(true)
+        setLoaded(true);
       } else {
-        location.href = '/';
+        location.href = "/";
       }
-    })
-  }, [])
+    });
+  }, []);
 
-
-
-
-
-  const [startDate, setStartDate] = useState(new Date('2024', '9', '20').toLocaleDateString());
+  const [startDate, setStartDate] = useState(new Date());
   const [goLiveNow, setGoLiveNow] = useState(false);
-  const [title, setTitle] = useState("Test");
-  const [description, setDescription] = useState("test");
-  const [category, setCategory] = useState("test");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [imageObject, setImageObject] = useState(null);
   const imageObjectRef = useRef();
   const [imageName, setImageName] = useState("");
@@ -55,7 +51,6 @@ const page = () => {
     setImageObject(selectedFile);
     setImageName(selectedFile.name); // Update file name state
   };
-
 
   const submitForm = () => {
     console.log(imageObjectRef.current)
@@ -85,9 +80,7 @@ const page = () => {
 
   }
 
-
-
-  return !loaded ? <><h1>Loading...</h1></> : (
+return !loaded ? <><h1>Loading...</h1></> : (
     <div className="min-h-screen">
       <Navbar />
       <div className="h-[calc(100vh-3.5rem)] p-10">
@@ -135,33 +128,11 @@ const page = () => {
               </label>
             </div>
 
-            <Popover>
-              <PopoverTrigger disabled={goLiveNow} asChild>
-                <Button
-                  variant="outline"
-                  className={`w-full justify-start text-left font-normal ${!startDate && "text-muted-foreground"
-                    } `}
-                >
-                  {startDate ? (
-                    format(startDate, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={(e) => setStartDate(format(e, "yyyy-MM-dd"))}
-                  disabled={(startDate) =>
-                    startDate > new Date() || startDate < new Date("1900-01-01")
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DateTimePicker
+              date={startDate}
+              setDate={setStartDate}
+              disabled={goLiveNow}
+            />
           </div>
           <div>
             <Label>
@@ -178,11 +149,7 @@ const page = () => {
               />
             </Label>
           </div>
-          <Button
-            onClick={submitForm}
-          >
-            Save changes
-          </Button>
+          <Button onClick={submitForm}>Save changes</Button>
         </div>
       </div>
     </div>

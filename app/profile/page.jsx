@@ -1,6 +1,6 @@
 "use client";
 import Navbar from "@/components/Navbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Edit, UserRoundPen } from "lucide-react";
@@ -18,6 +18,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import ProfileList from "@/components/ProfileList";
+import { useRouter } from "next/navigation";
+import API from "@/api/endpoints";
+import { toast } from "sonner";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const podcasts = [
   {
@@ -103,16 +107,47 @@ const podcasts = [
 ];
 
 const page = () => {
+  const router = useRouter();
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    API.isLoggedIn().then((result) => {
+      if (result.ok) {
+        // get profile data
+        API.getProfile().then((result) => {
+          if (result.ok) {
+            const response = result.json();
+            response.then((data) => {
+              setName(data.name);
+              setUsername(data.username);
+              setEmail(data.email);
+              setDOB(new Date(data.dob));
+              setGender(data.gender === true ? "Male" : "Female");
+              setProfilePicture(data.profilePicture);
+              setPassword(data.password);
+              setLoaded(true);
+            });
+          } else {
+            toast.error("Failed to load User Data");
+          }
+        });
+      } else {
+        toast.error("Please login first");
+        router.push("/");
+      }
+    });
+  }, []);
+
   const [profilePicture, setProfilePicture] = useState(
     "https://avatar.iran.liara.run/public"
   );
   const [profilePictureFile, setProfilePictureFile] = useState(null);
-  const [name, setName] = useState("Abdelrahman Hany");
-  const [username, setUsername] = useState("abduuhany");
-  const [email, setEmail] = useState("abdu.hany@gmail.com");
-  const [password, setPassword] = useState("123456");
-  const [DOB, setDOB] = useState("2022-01-02");
-  const [gender, setGender] = useState("Male");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [DOB, setDOB] = useState("");
+  const [gender, setGender] = useState("");
   const [pastPodcasts, setPastPodcasts] = useState(podcasts);
   const [upcomingPodcasts, setUpcomingPodcasts] = useState(podcasts);
 
@@ -143,7 +178,9 @@ const page = () => {
       setProfilePicture(URL.createObjectURL(file));
     }
   };
-  return (
+  return !loaded ? (
+    <LoadingScreen text="Loading Profile..." />
+  ) : (
     <>
       <Navbar />
       {/* Profile Card */}
@@ -153,7 +190,13 @@ const page = () => {
             <CardHeader className="relative justify-center items-center">
               {/* Avatar Image */}
               <Avatar className="w-32 h-32 mb-2">
-                <AvatarImage src={profilePicture}></AvatarImage>
+                <AvatarImage
+                  src={
+                    profilePicture
+                      ? profilePicture
+                      : "https://avatar.iran.liara.run/public"
+                  }
+                ></AvatarImage>
               </Avatar>
               {/* Change Profile Picture Button */}
               <Label className="absolute top-[120px] right-[70px] cursor-pointer">

@@ -22,38 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import Cookies from "js-cookie";
 import API from "@/api/endpoints";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { DatePicker } from "./DatePicker";
 
 const LoginForm = () => {
-
-
-
-
-
-//check if logged in.
-API.isLoggedIn().then(result=>{
-  if (result.ok){
-    location.href = '/homepage'
-  }
-})
-
-
-
-
-
-
-
-
-
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   // Sign In Credentials
@@ -75,9 +51,6 @@ API.isLoggedIn().then(result=>{
   const [signupGenderError, setSignupGenderError] = useState("");
   const [signupDateError, setSignupDateError] = useState("");
   const [signupPasswordError, setSignupPasswordError] = useState("");
-
-
-
 
   //  Validator functions
   const validateEmail = (email) => {
@@ -107,27 +80,20 @@ API.isLoggedIn().then(result=>{
     }
 
     if (isValid) {
-      // const loginResponse = await fetch("http://localhost:3001/auth/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email: signinEmail,
-      //     password: signinPassword,
-      //   }),
-      // });
-      const loginResponse = await API.login(signinEmail, signinPassword)
-      console.log(loginResponse);
+      const loginResponse = await API.login(signinEmail, signinPassword);
       if (loginResponse.ok) {
         // setting the token in cookies
         const token = await loginResponse.json();
         Cookies.set("token", token.token, { expires: 7 });
-
-        location.href = '/homepage'
+        toast.success("Logged in successfully", {
+          duration: 3000,
+        });
+        router.push("/homepage");
       } else {
-        console.log("Failed to log in user");
-        setSigninPasswordError(loginResponse["msg"])
+        // failed to log in
+        toast.error("Invalid email or password", {
+          duration: 3000,
+        });
       }
     }
   };
@@ -188,49 +154,30 @@ API.isLoggedIn().then(result=>{
         dob: signupDate,
         password: signupPassword,
       });
-      // const signupResponse = await fetch(
-      //   "http://localhost:3001/auth/register",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       name: signupName,
-      //       username: signupUsername,
-      //       email: signupEmail,
-      //       gender: signupGender === "Male" ? "1" : "0",
-      //       dob: signupDate,
-      //       password: signupPassword,
-      //     }),
-      //   }
-      // );
 
       // Signing in with new user credentials in backend
       console.log(signupResponse.status);
       if (signupResponse.status === 201) {
-        console.log("User created successfully");
         const loginResponse = await API.login(signupEmail, signupPassword);
-        // const loginResponse = await fetch("http://localhost:3001/auth/login", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     email: signupEmail,
-        //     password: signupPassword,
-        //   }),
-        // });
-        console.log('loginResponse', loginResponse);
         if (loginResponse.ok) {
           // setting the token in cookies
           const { token } = await loginResponse.json();
           Cookies.set("token", token, { expires: 7 });
-          location.href = '/homepage'
+          toast.success("Welcome to Podverse", {
+            duration: 3000,
+          });
+          router.push("/homepage");
         } else {
-          console.log("Failed to log in user");
+          // Failed to log in
+          toast.error("Failed to log in", {
+            duration: 3000,
+          });
         }
       } else {
+        // Failed to create user
+        toast.error("Failed to create user", {
+          duration: 3000,
+        });
         console.log("Failed to create user");
       }
     }
@@ -239,7 +186,7 @@ API.isLoggedIn().then(result=>{
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
-    <Tabs defaultValue="signin" className="w-[400px]">
+    <Tabs defaultValue="signin" className="w-full max-w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="signin">Sign In</TabsTrigger>
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -377,34 +324,7 @@ API.isLoggedIn().then(result=>{
             </div>
             <div className="space-y-2">
               <Label>Date of Birth</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!signupDate && "text-muted-foreground"
-                      } ${signupDateError ? "border-red-500" : ""}`}
-                  >
-                    {signupDate ? (
-                      format(signupDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={signupDate}
-                    onSelect={(e) => setSignupDate(format(e, "yyyy-MM-dd"))}
-                    disabled={(signupDate) =>
-                      signupDate > new Date() ||
-                      signupDate < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker date={signupDate} setDate={setSignupDate} />
               {signupDateError && (
                 <div className="text-red-500 text-xs">{signupDateError}</div>
               )}

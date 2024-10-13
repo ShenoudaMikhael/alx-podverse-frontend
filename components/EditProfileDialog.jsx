@@ -25,6 +25,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
+import { toast } from "sonner";
+import API from "@/api/endpoints";
+import { DatePicker } from "./DatePicker";
 
 const EditProfileDialog = ({
   name,
@@ -51,29 +54,69 @@ const EditProfileDialog = ({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSave = () => {
+  // Save original values when the dialog opens
+  const handleDialogOpenChange = (isOpen) => {
+    if (isOpen) {
+      // If opening, store the original values
+      setNewName(name);
+      setNewUsername(username);
+      setNewEmail(email);
+      setNewDOB(DOB);
+      setNewGender(gender);
+    } else {
+      // If closing, reset to original values (discard unsaved changes)
+      setNewName(name);
+      setNewUsername(username);
+      setNewEmail(email);
+      setNewDOB(DOB);
+      setNewGender(gender);
+    }
+    setEditProfileDialogOpen(isOpen);
+  };
+
+  const handleSave = async () => {
     setName(newName);
     setUsername(newUsername);
     setEmail(newEmail);
     setDOB(newDOB);
     setGender(newGender);
     setEditProfileDialogOpen(false);
-    console.log(newName, newUsername, newEmail, newGender, newDOB);
-    console.log("Profile updated");
+    const response = await API.updateProfile({
+      name: newName === "" ? name : newName,
+      username: newUsername === "" ? username : newUsername,
+      email: newEmail === "" ? email : newEmail,
+      dob: newDOB === "" ? DOB : newDOB,
+      gender: newGender === "" ? gender : newGender === "Male" ? "1" : "0",
+    });
+    if (response.ok) {
+      toast.success("Profile updated successfully", {
+        duration: 3000,
+      });
+      setEditProfileDialogOpen(false);
+    } else {
+      toast.error("Failed to update profile", {
+        duration: 3000,
+      });
+    }
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      console.log("Passwords do not match");
-      return;
+      toast.error("Passwords do not match");
+    } else {
+      const response = await API.updatePassword(oldPassword, newPassword);
+      if (response.ok) {
+        toast.success("Password changed successfully");
+      } else {
+        toast.error("Failed to change password");
+      }
+      setEditProfileDialogOpen(false);
     }
-    console.log("Password changed");
-    setEditProfileDialogOpen(false);
   };
   return (
     <Dialog
       open={editProfileDialogOpen}
-      onOpenChange={setEditProfileDialogOpen}
+      onOpenChange={handleDialogOpenChange} // Handle dialog open/close
     >
       <DialogTrigger asChild>
         <Button size="sm" className="font-light flex gap-2">
@@ -131,34 +174,7 @@ const EditProfileDialog = ({
               {/* Date of Birth field */}
               <div className="space-y-2">
                 <Label>Date of Birth</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={`w-full justify-start text-left font-normal ${
-                        !newDOB && "text-muted-foreground"
-                      } `}
-                    >
-                      {newDOB ? (
-                        format(newDOB, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={newDOB}
-                      onSelect={(e) => setNewDOB(format(e, "yyyy-MM-dd"))}
-                      disabled={(newDOB) =>
-                        newDOB > new Date() || newDOB < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DatePicker date={newDOB} setDate={setNewDOB} />
               </div>
 
               {/* Gender field */}

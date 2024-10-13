@@ -12,8 +12,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Navbar = () => {
+  const router = useRouter();
+
+  const signOut = () => {
+    Cookies.remove("token");
+    router.push("/");
+  };
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -29,9 +38,15 @@ const Navbar = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
-          <Link href="/profile">Profile</Link>
+          <Link href="/profile">
+            <Button variant="ghost">Profile</Button>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Sign out</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Button onClick={() => signOut()} variant="ghost">
+            Sign Out
+          </Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
