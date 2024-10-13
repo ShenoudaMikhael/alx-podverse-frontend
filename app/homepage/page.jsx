@@ -18,20 +18,13 @@ import { Separator } from "@/components/ui/separator";
 import API from "@/api/endpoints";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const page = () => {
   const router = useRouter();
   const [searchFilter, setSearchFilter] = useState("All");
+  const [categories, setCategories] = useState([]);
 
-  const categories = [
-    "All",
-    "Technology",
-    "Science",
-    "Entertainment",
-    "Politics",
-    "Sports",
-    "Others",
-  ];
   const discoverPodcasts = [
     {
       title: "Morning News",
@@ -212,7 +205,16 @@ const page = () => {
   useEffect(() => {
     API.isLoggedIn().then((result) => {
       if (result.ok) {
-        setLoaded(true);
+        API.getCategories().then((result) => {
+          if (result.ok) {
+            result.json().then((data) => {
+              const categoriesList = ["All"];
+              categoriesList.push(...data.map((data) => data.name));
+              setCategories(categoriesList);
+              setLoaded(true);
+            });
+          }
+        });
       } else {
         toast.error("Please login first");
         router.push("/");
@@ -221,9 +223,7 @@ const page = () => {
   }, []);
 
   return !loaded ? (
-    <div className="w-screen h-screen flex justify-center items-center">
-      <h1 className="text-lg font-bold">Loading...</h1>
-    </div>
+    <LoadingScreen text="Loading..." />
   ) : (
     <div className="max-h-screen">
       {/* Navbar */}

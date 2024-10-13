@@ -12,6 +12,7 @@ const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
 const getPodcastEndpoint = `${domain}/podcast`;
+const getCategories = `${domain}/category/get`;
 
 
 class API {
@@ -135,12 +136,26 @@ class API {
         const response = await fetch(userProfilePictureEndpoint, {
             method: "PUT",
             headers: {
+                // "Content-Type": "multipart/form-data",
                 'x-auth-token': token
             },
             body: data,
         })
 
         return response;
+    }
+
+    static async getCategories() {
+        const token = Cookies.get("token");
+        const response = await fetch(getCategories, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
     }
 }
 
