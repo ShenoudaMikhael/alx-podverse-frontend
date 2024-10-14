@@ -16,6 +16,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function DateTimePicker({ disabled, date, setDate }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const today = new Date();
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const handleDateSelect = (selectedDate) => {
@@ -68,6 +69,7 @@ export function DateTimePicker({ disabled, date, setDate }) {
             selected={date}
             onSelect={handleDateSelect}
             initialFocus
+            disabled={{ before: today }}
           />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">

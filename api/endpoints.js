@@ -8,6 +8,7 @@ const userEndpoint = `${domain}/user/profile`;
 const updateUserEndpoint = `${domain}/user/updateProfile`;
 const updatePasswordEndpoint = `${domain}/user/updatePassword`;
 const userProfilePictureEndpoint = `${domain}/user/profilePicture`;
+const userPodcastsEndpoint = `${domain}/podcast/userPodcast`;
 const followersEndpoint = `${domain}/user/followers`;
 const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
@@ -184,6 +185,18 @@ class API {
         return response
     }
 
+    static async getUserPodcast() {
+        const token = Cookies.get("token");
+        const response = await fetch(userPodcastsEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
 }
 
 export default API
