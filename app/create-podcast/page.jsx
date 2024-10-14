@@ -1,6 +1,7 @@
 "use client";
 import API from "@/api/endpoints";
 import { DateTimePicker } from "@/components/DateTimePicker";
+import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,17 +22,28 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 const page = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     console.log("use effect called..!");
     API.isLoggedIn().then((result) => {
       if (result.ok) {
+        // get categories
+        API.getCategories().then((result) => {
+          if (result.ok) {
+            result.json().then((data) => {
+              setCategoriesList(data);
+            });
+          }
+        });
         setLoaded(true);
       } else {
-        location.href = "/";
+        router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });
   }, []);
@@ -40,47 +52,55 @@ const page = () => {
   const [goLiveNow, setGoLiveNow] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [categoryID, setCategoryID] = useState();
   const [imageObject, setImageObject] = useState(null);
   const imageObjectRef = useRef();
   const [imageName, setImageName] = useState("");
 
   const handleImageUpload = (event) => {
     const selectedFile = event.target.files[0];
-    imageObjectRef.current = selectedFile;
-    setImageObject(selectedFile);
-    setImageName(selectedFile.name); // Update file name state
+    if (selectedFile) {
+      imageObjectRef.current = selectedFile;
+      setImageObject(selectedFile);
+      setImageName(selectedFile.name); // Update file name state
+    }
   };
 
   const submitForm = () => {
-    console.log(imageObjectRef.current)
+    console.log(imageObjectRef.current);
     const data = new FormData();
 
-    data.append('data', JSON.stringify({
-      title,
-      description,
-      start_date: startDate,
-      cat_id: 1,
-      is_live: goLiveNow,
-      imageName: imageName
-    }));
-    data.append('file', imageObject);
-    console.log(data)
+    data.append(
+      "data",
+      JSON.stringify({
+        title,
+        description,
+        start_date: startDate,
+        cat_id: categoryID,
+        is_live: goLiveNow,
+        imageName: imageName,
+      })
+    );
+    data.append("file", imageObject);
+    console.log(data);
 
     API.createPodcast(data).then(async (response) => {
       //handle correct response
       console.log(response);
-      const result = await response.json()
-
+      const result = await response.json();
+      console.log(result);
       if (goLiveNow) {
-        location.href = `/podcast/${result.podcast.uuid}`
+        router.push(`/podcast/${result.podcast.uuid}`);
+      } else {
+        router.push("/homepage");
       }
+    });
+  };
 
-    })
-
-  }
-
-return !loaded ? <><h1>Loading...</h1></> : (
+  return !loaded ? (
+    <LoadingScreen text="Loading..." />
+  ) : (
     <div className="min-h-screen">
       <Navbar />
       <div className="h-[calc(100vh-3.5rem)] p-10">
@@ -99,17 +119,16 @@ return !loaded ? <><h1>Loading...</h1></> : (
           {/* Category field */}
           <div>
             <Label className="text-md">Category *</Label>
-            <Select onValueChange={(value) => setCategory(value)}>
+            <Select onValueChange={(value) => setCategoryID(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Technology">Technology</SelectItem>
-                <SelectItem value="Science">Science</SelectItem>
-                <SelectItem value="Entertainment">Entertainment</SelectItem>
-                <SelectItem value="Politics">Politics</SelectItem>
-                <SelectItem value="Sports">Sports</SelectItem>
-                <SelectItem value="Others">Others</SelectItem>
+                {categoriesList.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

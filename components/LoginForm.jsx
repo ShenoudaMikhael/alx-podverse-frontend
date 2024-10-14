@@ -24,12 +24,14 @@ import {
 } from "@/components/ui/select";
 import Cookies from "js-cookie";
 import API from "@/api/endpoints";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { DatePicker } from "./DatePicker";
 
 const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [showPassword, setShowPassword] = useState(false);
 
   // Sign In Credentials
@@ -88,7 +90,7 @@ const LoginForm = () => {
         toast.success("Logged in successfully", {
           duration: 3000,
         });
-        router.push("/homepage");
+        router.push(redirect || "/homepage");
       } else {
         // failed to log in
         toast.error("Invalid email or password", {
@@ -166,7 +168,7 @@ const LoginForm = () => {
           toast.success("Welcome to Podverse", {
             duration: 3000,
           });
-          router.push("/homepage");
+          router.push(redirect || "/homepage");
         } else {
           // Failed to log in
           toast.error("Failed to log in", {
