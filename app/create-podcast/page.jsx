@@ -4,15 +4,9 @@ import { DateTimePicker } from "@/components/DateTimePicker";
 import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -20,8 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { format } from "date-fns";
-import { CalendarIcon, Image, UserRoundPen } from "lucide-react";
+import { Image } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -29,6 +22,13 @@ const page = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
+
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    categoryID: "",
+  });
+
   useEffect(() => {
     console.log("use effect called..!");
     API.isLoggedIn().then((result) => {
@@ -67,7 +67,39 @@ const page = () => {
     }
   };
 
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
+      title: "",
+      description: "",
+      categoryID: "",
+    };
+
+    if (title.trim() === "") {
+      newErrors.title = "Title is required";
+      valid = false;
+    }
+
+    if (description.trim() === "") {
+      newErrors.description = "Description is required";
+      valid = false;
+    }
+
+    if (!categoryID) {
+      newErrors.categoryID = "Please select a category";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
   const submitForm = () => {
+    // Run form validation
+    if (!validateForm()) {
+      return;
+    }
+
     console.log(imageObjectRef.current);
     const data = new FormData();
 
@@ -106,21 +138,38 @@ const page = () => {
       <div className="h-[calc(100vh-3.5rem)] p-10">
         <div className="flex flex-col gap-6 justify-center h-full max-w-[500px] mx-auto">
           <h1 className="text-3xl font-bold text-center">Create New Podcast</h1>
+
+          {/* Title Field with Validation */}
           <div>
             <Label className="text-md">Title *</Label>
-            <Input onChange={(e) => setTitle(e.target.value)} />
+            <Input
+              onChange={(e) => setTitle(e.target.value)}
+              className={errors.title ? "border-red-500" : ""}
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title}</p>
+            )}
           </div>
 
-          {/* Description field */}
+          {/* Description Field with Validation */}
           <div>
             <Label className="text-md">Description *</Label>
-            <Input onChange={(e) => setDescription(e.target.value)} />
+            <Input
+              onChange={(e) => setDescription(e.target.value)}
+              className={errors.description ? "border-red-500" : ""}
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.description}</p>
+            )}
           </div>
-          {/* Category field */}
+
+          {/* Category Field with Validation */}
           <div>
             <Label className="text-md">Category *</Label>
             <Select onValueChange={(value) => setCategoryID(value)}>
-              <SelectTrigger>
+              <SelectTrigger
+                className={errors.categoryID ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
@@ -131,8 +180,12 @@ const page = () => {
                 ))}
               </SelectContent>
             </Select>
+            {errors.categoryID && (
+              <p className="text-red-500 text-sm">{errors.categoryID}</p>
+            )}
           </div>
 
+          {/* Start Date Picker */}
           <div>
             <Label className="text-md">Start Date</Label>
             <div className="flex items-center gap-2 my-2">
@@ -146,13 +199,14 @@ const page = () => {
                 Go Live Now
               </label>
             </div>
-
             <DateTimePicker
               date={startDate}
               setDate={setStartDate}
               disabled={goLiveNow}
             />
           </div>
+
+          {/* Image Upload Field */}
           <div>
             <Label>
               Podcast Picture
@@ -168,6 +222,8 @@ const page = () => {
               />
             </Label>
           </div>
+
+          {/* Submit Button */}
           <Button onClick={submitForm}>Save changes</Button>
         </div>
       </div>

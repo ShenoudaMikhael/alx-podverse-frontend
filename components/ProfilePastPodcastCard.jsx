@@ -28,7 +28,7 @@ const ProfilePastPodcastCard = ({
       </CardHeader>
       <CardContent className="px-4 pb-4">
         <Image
-          className="hidden md:block"
+          className="hidden md:block h-[232px] object-cover"
           width={1470}
           height={980}
           src={imageUrl}
@@ -41,7 +41,7 @@ const ProfilePastPodcastCard = ({
           <Badge variant="outline">{category}</Badge>
           <div className="text-xs flex items-center gap-2">
             <Calendar />
-            {startDate}
+            {startDate.toLocaleDateString("en-US")}
           </div>
         </div>
       </CardFooter>

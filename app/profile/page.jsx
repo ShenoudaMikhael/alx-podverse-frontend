@@ -1,6 +1,6 @@
 "use client";
 import Navbar from "@/components/Navbar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { UserRoundPen } from "lucide-react";
@@ -22,104 +22,23 @@ import API, { domain } from "@/api/endpoints";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
 
-// const podcasts = [
-//   {
-//     title: "Live Tech Talk",
-//     description: "Stay updated with the latest in technology and gadgets.",
-//     host: "John Doe",
-//     listeners: "1.2k",
-//     category: "Technology",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: true,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "Science Today",
-//     description: "Exploring the wonders of science and new discoveries.",
-//     host: "Jane Smith",
-//     listeners: "950",
-//     category: "Science",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "Entertainment Weekly",
-//     description: "Your weekly dose of movies, music, and pop culture.",
-//     host: "Alice Johnson",
-//     listeners: "1.5k",
-//     category: "Entertainment",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "Political Roundup",
-//     description: "A deep dive into the latest political news and events.",
-//     host: "Bob Williams",
-//     listeners: "800",
-//     category: "Politics",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "Health & Wellness",
-//     description: "Tips for a healthier and happier life.",
-//     host: "Sarah Lee",
-//     listeners: "1.3k",
-//     category: "Health",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "Business Buzz",
-//     description: "Insights into the business world and market trends.",
-//     host: "Michael Green",
-//     listeners: "1.1k",
-//     category: "Business",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "History Uncovered",
-//     description: "Exploring the events and figures that shaped the world.",
-//     host: "Robert Black",
-//     listeners: "750",
-//     category: "History",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-//   {
-//     title: "True Crime Chronicles",
-//     description: "Real-life crime stories and unsolved mysteries.",
-//     host: "Laura White",
-//     listeners: "2.0k",
-//     category: "True Crime",
-//     imageUrl: "https://placehold.co/1470x980/jpg",
-//     isLive: false,
-//     startDate: "2022-09-01",
-//   },
-// ];
+const getCategoryIdByName = (categoryName, categoriesList) => {
+  const category = categoriesList.find((cat) => cat.name === categoryName);
+  return category ? category.id : null;
+};
 
-const getCategoryName = (catID, categoriesList) => {
-  for (let i = 0; i < categoriesList.length; i++) {
-    if (categoriesList[i].id === catID) {
-      return categoriesList[i].name;
-    }
-  }
+const getCategoryNameById = (id, categoriesList) => {
+  const category = categoriesList.find((cat) => cat.id === id);
+  return category ? category.name : null;
 };
 
 const page = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
+  const categories = useRef([]);
 
   useEffect(() => {
-    let categories = [];
     // check if user is logged in
     API.isLoggedIn().then((result) => {
       if (result.ok) {
@@ -174,72 +93,76 @@ const page = () => {
                           API.getCategories().then((result) => {
                             if (result.ok) {
                               result.json().then((data) => {
-                                categories = data;
+                                categories.current = data;
+                                // ONLY after we get categories
+                                // Get Podcasts and Divide into Past/Upcoming with Renamed Fields
+                                API.getUserPodcast().then((result) => {
+                                  if (result.ok) {
+                                    result.json().then((data) => {
+                                      const currentTime = new Date();
+                                      // Rename and map podcast fields to the new structure
+                                      const renamePodcastFields = (podcast) => {
+                                        return {
+                                          id: podcast.id,
+                                          title: podcast.title,
+                                          description: podcast.description,
+                                          category: getCategoryNameById(
+                                            podcast.cat_id,
+                                            categories.current
+                                          ),
+                                          imageUrl:
+                                            podcast.podcastPic !== null
+                                              ? `${domain}/${podcast.podcastPic}`
+                                              : "https://placehold.co/1470x980/jpg", // Fallback if image is null
+                                          isLive: podcast.is_live,
+                                          startDate: new Date(
+                                            podcast.start_date
+                                          ),
+                                          uuid: podcast.uuid,
+                                          currentSocketID:
+                                            podcast.current_socket_id,
+                                        };
+                                      };
+
+                                      // Filter and map for past podcasts
+                                      const pastPodcasts = data.podcasts
+                                        .filter((podcast) => {
+                                          const startDate = new Date(
+                                            podcast.start_date
+                                          );
+                                          return (
+                                            startDate < currentTime &&
+                                            !podcast.is_live
+                                          );
+                                        })
+                                        .map(renamePodcastFields);
+
+                                      // Filter and map for upcoming/current podcasts
+                                      const upcomingPodcasts = data.podcasts
+                                        .filter((podcast) => {
+                                          const startDate = new Date(
+                                            podcast.start_date
+                                          );
+                                          return (
+                                            startDate >= currentTime ||
+                                            podcast.is_live
+                                          );
+                                        })
+                                        .map(renamePodcastFields)
+                                        .sort((a, b) => b.isLive - a.isLive);
+
+                                      // Set state with the transformed data
+                                      setPastPodcasts(pastPodcasts);
+                                      setUpcomingPodcasts(upcomingPodcasts);
+
+                                      setLoaded(true); // Mark data as fully loaded
+                                    });
+                                  } else {
+                                    toast.error("Failed to load Podcasts Data");
+                                  }
+                                });
                               });
                             } else toast.error("Failed to load Categories");
-                          });
-
-                          // Get Podcasts and Divide into Past/Upcoming with Renamed Fields
-                          API.getUserPodcast().then((result) => {
-                            if (result.ok) {
-                              result.json().then((data) => {
-                                const currentTime = new Date();
-
-                                // Rename and map podcast fields to the new structure
-                                const renamePodcastFields = (podcast) => {
-                                  return {
-                                    title: podcast.title,
-                                    description: podcast.description,
-                                    category: getCategoryName(
-                                      podcast.cat_id,
-                                      categories
-                                    ),
-                                    imageUrl:
-                                      podcast.podcastPic !== null
-                                        ? `${domain}/${podcast.podcastPic}`
-                                        : "https://placehold.co/1470x980/jpg", // Fallback if image is null
-                                    isLive: podcast.is_live,
-                                    startDate: new Date(
-                                      podcast.start_date
-                                    ).toLocaleDateString(),
-                                  };
-                                };
-
-                                // Filter and map for past podcasts
-                                const pastPodcasts = data.podcasts
-                                  .filter((podcast) => {
-                                    const startDate = new Date(
-                                      podcast.start_date
-                                    );
-                                    return (
-                                      startDate < currentTime &&
-                                      !podcast.is_live
-                                    );
-                                  })
-                                  .map(renamePodcastFields);
-
-                                // Filter and map for upcoming/current podcasts
-                                const upcomingPodcasts = data.podcasts
-                                  .filter((podcast) => {
-                                    const startDate = new Date(
-                                      podcast.start_date
-                                    );
-                                    return (
-                                      startDate >= currentTime ||
-                                      podcast.is_live
-                                    );
-                                  })
-                                  .map(renamePodcastFields);
-
-                                // Set state with the transformed data
-                                setPastPodcasts(pastPodcasts);
-                                setUpcomingPodcasts(upcomingPodcasts);
-
-                                setLoaded(true); // Mark data as fully loaded
-                              });
-                            } else {
-                              toast.error("Failed to load Podcasts Data");
-                            }
                           });
                         });
                       } else {
@@ -360,29 +283,43 @@ const page = () => {
         <div className="w-full p-4 md:p-10 flex flex-col gap-4">
           <h1 className="text-xl font-bold">Current/Upcoming Podcasts</h1>
           <div className="px-10">
-            <Carousel className="w-full">
-              <CarouselContent className="-ml-1">
-                {upcomingPodcasts.map((podcast, i) => (
-                  <CarouselItem
-                    key={i}
-                    className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
-                  >
-                    <ProfileUpcomingPodcastCard
-                      title={podcast.title}
-                      description={podcast.description}
-                      category={podcast.category}
-                      imageUrl={podcast.imageUrl}
-                      isLive={podcast.isLive}
-                      startDate={podcast.startDate}
-                      upcomingPodcasts={upcomingPodcasts}
-                      setUpcomingPodcasts={setUpcomingPodcasts}
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            {upcomingPodcasts.length === 0 ? (
+              <>
+                <h1 className="text-center text-lg font-bold text-gray-300 dark:text-gray-500">
+                  No upcoming podcasts
+                </h1>
+                <p className="text-center text-md text-gray-300 dark:text-gray-500">
+                  start creating podcasts to view them here
+                </p>
+              </>
+            ) : (
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-1">
+                  {upcomingPodcasts.map((podcast, i) => (
+                    <CarouselItem
+                      key={i}
+                      className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
+                    >
+                      <ProfileUpcomingPodcastCard
+                        id={podcast.id}
+                        title={podcast.title}
+                        description={podcast.description}
+                        category={podcast.category}
+                        imageUrl={podcast.imageUrl}
+                        isLive={podcast.isLive}
+                        startDate={podcast.startDate}
+                        uuid={podcast.uuid}
+                        categories={categories.current}
+                        upcomingPodcasts={upcomingPodcasts}
+                        setUpcomingPodcasts={setUpcomingPodcasts}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            )}
           </div>
         </div>
 
@@ -390,27 +327,33 @@ const page = () => {
         <div className="w-full p-4 md:p-10 flex flex-col gap-4">
           <h1 className="text-xl font-bold">Past Podcasts</h1>
           <div className="px-10">
-            <Carousel className="w-full">
-              <CarouselContent className="-ml-1">
-                {pastPodcasts.map((podcast, i) => (
-                  <CarouselItem
-                    key={i}
-                    className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
-                  >
-                    <ProfilePastPodcastCard
-                      title={podcast.title}
-                      description={podcast.description}
-                      category={podcast.category}
-                      imageUrl={podcast.imageUrl}
-                      startDate={podcast.startDate}
-                      isLive={podcast.isLive}
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            {pastPodcasts.length === 0 ? (
+              <h1 className="text-center text-lg font-bold text-gray-300 dark:text-gray-500">
+                No past podcasts
+              </h1>
+            ) : (
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-1">
+                  {pastPodcasts.map((podcast, i) => (
+                    <CarouselItem
+                      key={i}
+                      className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
+                    >
+                      <ProfilePastPodcastCard
+                        title={podcast.title}
+                        description={podcast.description}
+                        category={podcast.category}
+                        imageUrl={podcast.imageUrl}
+                        startDate={podcast.startDate}
+                        isLive={podcast.isLive}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            )}
           </div>
         </div>
       </div>
