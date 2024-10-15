@@ -14,6 +14,8 @@ const followingEndpoint = `${domain}/user/following`;
 const createPodcastEndpoint = `${domain}/podcast/create`;
 const getPodcastEndpoint = `${domain}/podcast`;
 const getCategories = `${domain}/category/get`;
+const updatePodcastEndpoint = `${domain}/podcast`;
+const deletePodcastEndpoint = `${domain}/podcast`;
 
 
 class API {
@@ -76,6 +78,7 @@ class API {
         return response;
     }
     static async postPodcast(uuid, socket_current_id) {
+        const token = Cookies.get("token");
         const response = await fetch(`${getPodcastEndpoint}/${uuid}`, {
             method: "POST",
             headers: {
@@ -189,6 +192,33 @@ class API {
         const token = Cookies.get("token");
         const response = await fetch(userPodcastsEndpoint, {
             method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async updatePodcast(id, data) {
+        const token = Cookies.get("token");
+        const response = await fetch(`${updatePodcastEndpoint}/${id}`, {
+            method: "PUT",
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'x-auth-token': token
+            },
+            body: data
+        })
+
+        return response
+    }
+
+    static async deletePodcast(id) {
+        const token = Cookies.get("token");
+        const response = await fetch(`${deletePodcastEndpoint}/${id}`, {
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 'x-auth-token': token
