@@ -217,7 +217,7 @@ const page = () => {
               <Input
                 type="file"
                 accept="image/*"
-                className="sr-only"
+                className="hidden"
                 onChange={handleImageUpload}
               />
             </Label>
