@@ -16,6 +16,9 @@ const getPodcastEndpoint = `${domain}/podcast`;
 const getCategories = `${domain}/category/get`;
 const updatePodcastEndpoint = `${domain}/podcast`;
 const deletePodcastEndpoint = `${domain}/podcast`;
+const getAllPodcastsEndpoint = `${domain}/podcast/podcasts`;
+const getFollowingPodcastsEndpoint = `${domain}/podcast/followingPodcast`;
+const getRecentLivePodcastsEndpoint = `${domain}/podcast/livePodcasts`;
 
 
 class API {
@@ -219,6 +222,45 @@ class API {
         const token = Cookies.get("token");
         const response = await fetch(`${deletePodcastEndpoint}/${id}`, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async getAllPodcasts() {
+        const token = Cookies.get("token");
+        const response = await fetch(getAllPodcastsEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async getFollowingPodcasts() {
+        const token = Cookies.get("token");
+        const response = await fetch(getFollowingPodcastsEndpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async getRecentLivePodcasts() {
+        const token = Cookies.get("token");
+        const response = await fetch(getRecentLivePodcastsEndpoint, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 'x-auth-token': token

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import PodcastDiscoveryCard from "@/components/PodcastDiscoveryCard";
 import { Input } from "@/components/ui/input";
@@ -20,188 +20,108 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
 
+const getCategoryIdByName = (categoryName, categoriesList) => {
+  const category = categoriesList.find((cat) => cat.name === categoryName);
+  return category ? category.id : null;
+};
+
+const getCategoryNameById = (id, categoriesList) => {
+  const category = categoriesList.find((cat) => cat.id === id);
+  return category ? category.name : null;
+};
+
 const page = () => {
   const router = useRouter();
   const [searchFilter, setSearchFilter] = useState("All");
+  const [searchText, setSearchText] = useState("");
   const [categories, setCategories] = useState([]);
-
-  const discoverPodcasts = [
-    {
-      title: "Morning News",
-      description: "Stay updated with the latest news and current events.",
-      host: "Emily Davis",
-      listeners: "1.8k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "The Daily Brief",
-      description: "A daily dose of news, analysis, and commentary.",
-      host: "David Lee",
-      listeners: "1.4k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Tech Talk Daily",
-      description: "The latest tech news, trends, and innovations.",
-      host: "Samantha Brown",
-      listeners: "1.6k",
-      category: "Technology",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "The Science Hour",
-      description: "Exploring the wonders of science and new discoveries.",
-      host: "Dr. Maria Rodriguez",
-      listeners: "1.2k",
-      category: "Science",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Entertainment Tonight",
-      description: "Your daily dose of movies, music, and pop culture.",
-      host: "Ryan Thompson",
-      listeners: "1.9k",
-      category: "Entertainment",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "The Political Pulse",
-      description: "A deep dive into the latest political news and events.",
-      host: "Senator James Wilson",
-      listeners: "1.5k",
-      category: "Politics",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Wellness Wednesday",
-      description: "Tips for a healthier and happier life.",
-      host: "Dr. Sophia Patel",
-      listeners: "1.7k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Business Insights",
-      description: "Insights into the business world and market trends.",
-      host: "CEO Mark Davis",
-      listeners: "1.3k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "History Revisited",
-      description: "Exploring the events and figures that shaped the world.",
-      host: "Professor John Taylor",
-      listeners: "1.1k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-  ];
-  const followersPodcasts = [
-    {
-      title: "Crime Scene Investigation",
-      description: "Real-life crime stories and unsolved mysteries.",
-      host: "Detective James Martin",
-      listeners: "2.2k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: false,
-    },
-    {
-      title: "The Morning Show",
-      description: "Start your day with news, entertainment, and more.",
-      host: "Tom Harris",
-      listeners: "2.5k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "The Tech Report",
-      description: "The latest tech news, trends, and innovations.",
-      host: "Samantha Brown",
-      listeners: "1.8k",
-      category: "Technology",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: false,
-    },
-    {
-      title: "Science in Action",
-      description: "Exploring the wonders of science and new discoveries.",
-      host: "Dr. Maria Rodriguez",
-      listeners: "1.4k",
-      category: "Science",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Entertainment Weekly",
-      description: "Your weekly dose of movies, music, and pop culture.",
-      host: "Ryan Thompson",
-      listeners: "2.1k",
-      category: "Entertainment",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: false,
-    },
-    {
-      title: "The Political Roundup",
-      description: "A deep dive into the latest political news and events.",
-      host: "Senator James Wilson",
-      listeners: "1.9k",
-      category: "Politics",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "Health and Wellness",
-      description: "Tips for a healthier and happier life.",
-      host: "Dr. Sophia Patel",
-      listeners: "1.6k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: false,
-    },
-    {
-      title: "Business Today",
-      description: "Insights into the business world and market trends.",
-      host: "CEO Mark Davis",
-      listeners: "1.8k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-    {
-      title: "History Uncovered",
-      description: "Exploring the events and figures that shaped the world.",
-      host: "Professor John Taylor",
-      listeners: "1.5k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: false,
-    },
-    {
-      title: "True Crime Chronicles",
-      description: "Real-life crime stories and unsolved mysteries.",
-      host: "Detective James Martin",
-      listeners: "2.4k",
-      category: "Others",
-      imageUrl: "https://placehold.co/1470x980/jpg",
-      isLive: true,
-    },
-  ];
-
+  const [allPodcasts, setAllPodcasts] = useState([]);
+  const [recentPodcasts, setRecentPodcasts] = useState([]);
+  const [followingPodcasts, setFollowingPodcasts] = useState([]);
+  const categoriesRef = useRef([]);
+  const allPodcastsRef = useRef([]);
+  const recentPodcastsRef = useRef([]);
+  const followingPodcastsRef = useRef([]);
   const [loaded, setLoaded] = useState(false);
+
+  const handleSearch = (searchText) => {
+    setSearchText(searchText);
+    const livePodcasts = allPodcastsRef.current.filter((podcast) => {
+      return podcast.is_live === true;
+    });
+    if (searchText === "" && searchFilter === "All") {
+      setRecentPodcasts(recentPodcastsRef.current);
+      return;
+    }
+    const filteredPodcasts = livePodcasts.filter((podcast) => {
+      return (
+        podcast.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        podcast.description.toLowerCase().includes(searchText.toLowerCase()) ||
+        podcast.user.name.toLowerCase().includes(searchText.toLowerCase())
+      );
+    });
+    if (searchFilter === "All") {
+      setRecentPodcasts(filteredPodcasts);
+    } else {
+      setRecentPodcasts(
+        filteredPodcasts.filter((podcast) => {
+          return (
+            getCategoryNameById(podcast.cat_id, categoriesRef.current) ===
+            searchFilter
+          );
+        })
+      );
+    }
+  };
+
+  const handleFilterChange = (filter) => {
+    setSearchFilter(filter);
+    const livePodcasts = allPodcastsRef.current.filter((podcast) => {
+      return podcast.is_live === true;
+    });
+    if (filter === "All" && searchText === "") {
+      setRecentPodcasts(recentPodcastsRef.current);
+    } else if (filter === "All" && searchText !== "") {
+      const filteredPodcasts = livePodcasts.filter((podcast) => {
+        return (
+          podcast.title.toLowerCase().includes(searchText.toLowerCase()) ||
+          podcast.description
+            .toLowerCase()
+            .includes(searchText.toLowerCase()) ||
+          podcast.user.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      });
+      setRecentPodcasts(filteredPodcasts);
+    } else if (filter !== "All" && searchText === "") {
+      setRecentPodcasts(
+        livePodcasts.filter((podcast) => {
+          return (
+            getCategoryNameById(podcast.cat_id, categoriesRef.current) ===
+            filter
+          );
+        })
+      );
+    } else if (filter !== "All" && searchText !== "") {
+      const filteredPodcasts = livePodcasts.filter((podcast) => {
+        return (
+          podcast.title.toLowerCase().includes(searchText.toLowerCase()) ||
+          podcast.description
+            .toLowerCase()
+            .includes(searchText.toLowerCase()) ||
+          podcast.user.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      });
+      setRecentPodcasts(
+        filteredPodcasts.filter((podcast) => {
+          return (
+            getCategoryNameById(podcast.cat_id, categoriesRef.current) ===
+            filter
+          );
+        })
+      );
+    }
+  };
+
   useEffect(() => {
     API.isLoggedIn().then((result) => {
       if (result.ok) {
@@ -210,9 +130,65 @@ const page = () => {
             result.json().then((data) => {
               const categoriesList = ["All"];
               categoriesList.push(...data.map((data) => data.name));
+              categoriesRef.current = data;
               setCategories(categoriesList);
-              setLoaded(true);
+
+              // Get all podcasts
+              API.getAllPodcasts().then((result) => {
+                if (result.ok) {
+                  result.json().then((data) => {
+                    // check if current user has a live podcast
+                    API.getProfile().then((result) => {
+                      if (result.ok) {
+                        result.json().then((profile) => {
+                          for (const podcast of data.podcasts) {
+                            if (
+                              profile.id === podcast.user.id &&
+                              podcast.is_live === true
+                            ) {
+                              toast.success("You have a live podcast");
+                              router.push(`/podcast/${podcast.uuid}`);
+                            }
+                          }
+                        });
+                      }
+                    });
+
+                    setAllPodcasts(data.podcasts);
+                    allPodcastsRef.current = data.podcasts;
+
+                    // Get Most Recent Live Podcasts
+                    API.getRecentLivePodcasts().then((result) => {
+                      if (result.ok) {
+                        result.json().then((data) => {
+                          setRecentPodcasts(data.podcasts);
+                          recentPodcastsRef.current = data.podcasts;
+
+                          // Get following podcasts
+                          API.getFollowingPodcasts().then((result) => {
+                            if (result.ok) {
+                              result.json().then((data) => {
+                                setFollowingPodcasts(data.podcasts);
+                                followingPodcastsRef.current = data.podcasts;
+                                setLoaded(true);
+                              });
+                            } else {
+                              toast.error("Failed to load following podcasts");
+                            }
+                          });
+                        });
+                      } else {
+                        toast.error("Failed to load recent live podcasts");
+                      }
+                    });
+                  });
+                } else {
+                  toast.error("Failed to load all podcasts");
+                }
+              });
             });
+          } else {
+            toast.error("Failed to load categories");
           }
         });
       } else {
@@ -232,7 +208,7 @@ const page = () => {
       {/* Discover Podcasts */}
       <div className=" p-10 justify-center items-center max-h-[calc((100vh - 88px) / 2)]">
         {/* Title */}
-        <h2 className="text-2xl font-bold my-4">Discover Podcasts</h2>
+        <h2 className="text-2xl font-bold my-4">Discover Live Podcasts</h2>
 
         {/* Search */}
         <div className="relative mb-4">
@@ -241,6 +217,7 @@ const page = () => {
             type="text"
             placeholder="Search for Podcasts"
             className="pl-10 pr-4 py-2 w-full"
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
 
@@ -250,10 +227,8 @@ const page = () => {
             <Badge
               key={category}
               variant={category === searchFilter ? "default" : "outline"}
-              className="hover:cursor-pointer"
-              onClick={() => {
-                setSearchFilter(category);
-              }}
+              className="hover:cursor-pointer min-w-fit"
+              onClick={() => handleFilterChange(category)}
             >
               {category}
             </Badge>
@@ -262,28 +237,43 @@ const page = () => {
 
         {/* Podcasts Carousel */}
         <div className="w-full hidden md:block px-4 md:px-10">
-          <Carousel className="w-full ">
-            <CarouselContent className="-ml-1">
-              {discoverPodcasts.map((podcast, i) => (
-                <CarouselItem
-                  key={i}
-                  className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
-                >
-                  <PodcastDiscoveryCard
-                    title={podcast.title}
-                    description={podcast.description}
-                    host={podcast.host}
-                    listeners={podcast.listeners}
-                    category={podcast.category}
-                    imageUrl={podcast.imageUrl}
-                    isLive={podcast.isLive}
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          {recentPodcasts.length === 0 ? (
+            <>
+              <h1 className="text-center text-lg font-bold text-gray-300 dark:text-gray-500">
+                No Live Podcasts to Join At The Moment.
+              </h1>
+              <p className="text-center text-md text-gray-300 dark:text-gray-500">
+                Create a live podcast to get started.
+              </p>
+            </>
+          ) : (
+            <Carousel className="w-full ">
+              <CarouselContent className="-ml-1">
+                {recentPodcasts.map((podcast, i) => (
+                  <CarouselItem
+                    key={i}
+                    className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
+                  >
+                    <PodcastDiscoveryCard
+                      title={podcast.title}
+                      description={podcast.description}
+                      host={podcast.user.name}
+                      hostImage={podcast.user.profilePic}
+                      category={getCategoryNameById(
+                        podcast.cat_id,
+                        categoriesRef.current
+                      )}
+                      imageUrl={podcast.podcastPic}
+                      isLive={podcast.is_live}
+                      uuid={podcast.uuid}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          )}
         </div>
       </div>
 
@@ -297,43 +287,84 @@ const page = () => {
 
         {/* Friends Podcasts Carousel */}
         <div className="w-full px-4 md:px-10">
-          <Carousel className="w-full">
-            <CarouselContent className="-ml-1">
-              {followersPodcasts.map((podcast, i) => (
-                <CarouselItem
-                  key={i}
-                  className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
-                >
-                  <PodcastDiscoveryCard
-                    title={podcast.title}
-                    description={podcast.description}
-                    host={podcast.host}
-                    listeners={podcast.listeners}
-                    category={podcast.category}
-                    imageUrl={podcast.imageUrl}
-                    isLive={podcast.isLive}
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          {followingPodcasts.length === 0 ? (
+            <>
+              <h1 className="text-center text-lg font-bold text-gray-300 dark:text-gray-500">
+                No Podcasts to display.
+              </h1>
+              <p className="text-center text-md text-gray-300 dark:text-gray-500">
+                You don't follow anyone or people you follow haven't created
+                Podcasts yet.
+              </p>
+            </>
+          ) : (
+            <Carousel className="w-full">
+              <CarouselContent className="-ml-1">
+                {followingPodcasts.map((podcast, i) => (
+                  <CarouselItem
+                    key={i}
+                    className="sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
+                  >
+                    <PodcastDiscoveryCard
+                      title={podcast.title}
+                      description={podcast.description}
+                      host={podcast.user.name}
+                      hostImage={podcast.user.profilePic}
+                      category={getCategoryNameById(
+                        podcast.cat_id,
+                        categoriesRef.current
+                      )}
+                      imageUrl={podcast.podcastPic}
+                      isLive={podcast.is_live}
+                      uuid={podcast.uuid}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          )}
         </div>
       </div>
 
       {/* for smaller screens */}
       <div className="px-4 flex flex-col gap-4 md:hidden">
-        {discoverPodcasts.map((podcast, i) => (
+        {recentPodcasts.map((podcast, i) => (
           <PodcastDiscoveryCard
             key={i}
             title={podcast.title}
             description={podcast.description}
-            host={podcast.host}
-            listeners={podcast.listeners}
-            category={podcast.category}
-            imageUrl={podcast.imageUrl}
-            isLive={podcast.isLive}
+            host={podcast.user.name}
+            hostImage={podcast.user.profilePic}
+            category={getCategoryNameById(
+              podcast.cat_id,
+              categoriesRef.current
+            )}
+            imageUrl={podcast.podcastPic}
+            isLive={podcast.is_live}
+            uuid={podcast.uuid}
+          />
+        ))}
+      </div>
+      <Separator />
+      <div className="px-4 flex flex-col gap-4 md:hidden">
+        {/* Title */}
+        <h2 className="text-2xl font-bold my-4">People you follow</h2>
+        {followingPodcasts.map((podcast, i) => (
+          <PodcastDiscoveryCard
+            key={i}
+            title={podcast.title}
+            description={podcast.description}
+            host={podcast.user.name}
+            hostImage={podcast.user.profilePic}
+            category={getCategoryNameById(
+              podcast.cat_id,
+              categoriesRef.current
+            )}
+            imageUrl={podcast.podcastPic}
+            isLive={podcast.is_live}
+            uuid={podcast.uuid}
           />
         ))}
       </div>

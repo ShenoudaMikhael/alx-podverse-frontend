@@ -17,6 +17,7 @@ import {
 import { Image } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const page = () => {
   const router = useRouter();
@@ -33,6 +34,29 @@ const page = () => {
     console.log("use effect called..!");
     API.isLoggedIn().then((result) => {
       if (result.ok) {
+        // check if user already has a live podcast
+        API.getAllPodcasts().then((res) => {
+          if (res.ok) {
+            res.json().then((data) => {
+              API.getProfile().then((res) => {
+                if (res.ok) {
+                  res.json().then((profile) => {
+                    for (const podcast of data.podcasts) {
+                      if (
+                        profile.id === podcast.user.id &&
+                        podcast.is_live === true
+                      ) {
+                        toast.success("You already have a live podcast");
+                        router.push(`/podcast/${podcast.uuid}`);
+                      }
+                    }
+                  });
+                }
+              });
+            });
+          }
+        });
+
         // get categories
         API.getCategories().then((result) => {
           if (result.ok) {

@@ -46,18 +46,36 @@ const page = () => {
         API.getProfile().then((result) => {
           if (result.ok) {
             const response = result.json();
-            response.then((data) => {
-              setName(data.name);
-              setUsername(data.username);
-              setEmail(data.email);
-              setDOB(new Date(data.dob));
-              setGender(data.gender === true ? "Male" : "Female");
+            response.then((profile) => {
+              // check if user already has a live podcast
+              API.getAllPodcasts().then((res) => {
+                if (res.ok) {
+                  res.json().then((data) => {
+                    for (const podcast of data.podcasts) {
+                      if (
+                        profile.id === podcast.user.id &&
+                        podcast.is_live === true
+                      ) {
+                        toast.success("You already have a live podcast");
+                        router.push(`/podcast/${podcast.uuid}`);
+                      }
+                    }
+                  });
+                }
+              });
+
+              // Set Profile Data
+              setName(profile.name);
+              setUsername(profile.username);
+              setEmail(profile.email);
+              setDOB(new Date(profile.dob));
+              setGender(profile.gender === true ? "Male" : "Female");
               setProfilePicture(
-                data.profilePic !== null
-                  ? `${domain}/${data.profilePic}`
+                profile.profilePic !== null
+                  ? `${domain}/${profile.profilePic}`
                   : "https://avatar.iran.liara.run/public"
               );
-              setPassword(data.password);
+              setPassword(profile.password);
 
               // Get followers list
               API.getFollowers().then((result) => {
@@ -67,7 +85,7 @@ const page = () => {
                       data.followersList.map((item) => {
                         return {
                           name: item.follower.name,
-                          image: item.follower.profilePic
+                          image: item.follower.profilePic,
                         };
                       })
                     );

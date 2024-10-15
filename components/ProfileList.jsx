@@ -40,7 +40,14 @@ const ProfileList = ({ listName, list }) => {
               <div className="flex justify-between" key={i}>
                 <div className="flex items-center gap-2">
                   <Avatar className="flex justify-center items-center">
-                    <AvatarImage  src={ follower.image === null ? "https://avatar.iran.liara.run/public" : `${domain}/${follower.image}`} />
+                    <AvatarImage
+                      className="w-full h-full object-cover"
+                      src={
+                        follower.image === null
+                          ? "https://avatar.iran.liara.run/public"
+                          : `${domain}/${follower.image}`
+                      }
+                    />
                   </Avatar>
                   <p>{follower.name}</p>
                 </div>

@@ -14,15 +14,17 @@ import { Badge } from "@/components/ui/badge";
 import { Circle } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { domain } from "@/api/endpoints";
 
 const PodcastDiscoveryCard = ({
   title,
   description,
   host,
-  listeners,
+  hostImage,
   category,
   imageUrl,
   isLive,
+  uuid,
 }) => {
   const router = useRouter();
   return (
@@ -33,23 +35,31 @@ const PodcastDiscoveryCard = ({
       </CardHeader>
       <CardContent className="px-4 pb-4">
         <Image
-          className="hidden md:block"
+          className="hidden md:block h-[232px] object-cover"
           width={1470}
           height={980}
-          src={imageUrl}
+          src={
+            imageUrl
+              ? `${domain}/${imageUrl}`
+              : "https://placehold.co/1470x980/jpg"
+          }
           alt="Podcast"
           priority
         ></Image>
         <div className="flex items-center gap-3 mt-3">
           <Avatar>
-            <AvatarImage src="https://avatar.iran.liara.run/public" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage
+              className="object-cover"
+              src={
+                hostImage
+                  ? `${domain}/${hostImage}`
+                  : "https://avatar.iran.liara.run/public"
+              }
+            />
           </Avatar>
           <div>
             <p className="text-sm font-medium">{host}</p>
-            <p className="text-sm text-muted-foreground">
-              {listeners} listeners
-            </p>
+            <p className="text-sm text-muted-foreground">listeners</p>
           </div>
         </div>
       </CardContent>
@@ -67,7 +77,7 @@ const PodcastDiscoveryCard = ({
         <Button
           onClick={() => {
             if (isLive) {
-              router.push(`/podcast`);
+              router.push(`/podcast/${uuid}`);
             }
           }}
           disabled={!isLive}

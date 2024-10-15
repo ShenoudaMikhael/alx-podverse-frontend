@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Radio, Menu, X, User } from "lucide-react";
 import { clashDisplay } from "@/app/fonts/fonts";
@@ -14,8 +14,33 @@ import {
 } from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import API from "@/api/endpoints";
 
 const Navbar = () => {
+  const [hideGoliveButton, setHideGoliveButton] = useState(false);
+  useEffect(() => {
+    API.getAllPodcasts().then((res) => {
+      if (res.ok) {
+        res.json().then((data) => {
+          API.getProfile().then((res) => {
+            if (res.ok) {
+              res.json().then((profile) => {
+                for (const podcast of data.podcasts) {
+                  if (
+                    profile.id === podcast.user.id &&
+                    podcast.is_live === true
+                  ) {
+                    setHideGoliveButton(true);
+                  }
+                }
+              });
+            }
+          });
+        });
+      }
+    });
+  }, []);
+
   const router = useRouter();
 
   const signOut = () => {
@@ -72,7 +97,10 @@ const Navbar = () => {
         >
           Home
         </Link>
-        <Link href="/create-podcast">
+        <Link
+          className={hideGoliveButton ? "hidden" : ""}
+          href="/create-podcast"
+        >
           <Button>Go Live</Button>
         </Link>
         {userAvatar}
