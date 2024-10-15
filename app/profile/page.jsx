@@ -68,8 +68,6 @@ const page = () => {
                         return {
                           name: item.follower.name,
                           image: item.follower.profilePic
-                            ? item.follower.profilePic
-                            : "https://avatar.iran.liara.run/public",
                         };
                       })
                     );
@@ -81,10 +79,8 @@ const page = () => {
                           setFollowingsList(
                             data.followingList.map((item) => {
                               return {
-                                name: item.follower.name,
-                                image: item.follower.profilePic
-                                  ? item.follower.profilePic
-                                  : "https://avatar.iran.liara.run/public",
+                                name: item.followed_creator.name,
+                                image: item.followed_creator.profilePic,
                               };
                             })
                           );
@@ -177,7 +173,6 @@ const page = () => {
         });
       } else {
         toast.error("Please login first");
-        console.log(pathname);
         router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });

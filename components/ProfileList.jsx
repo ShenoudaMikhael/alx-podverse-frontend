@@ -11,6 +11,7 @@ import { Avatar } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
+import { domain } from "@/api/endpoints";
 
 const ProfileList = ({ listName, list }) => {
   return (
@@ -38,8 +39,8 @@ const ProfileList = ({ listName, list }) => {
             {list.map((follower, i) => (
               <div className="flex justify-between" key={i}>
                 <div className="flex items-center gap-2">
-                  <Avatar>
-                    <AvatarImage src={follower.image} />
+                  <Avatar className="flex justify-center items-center">
+                    <AvatarImage  src={ follower.image === null ? "https://avatar.iran.liara.run/public" : `${domain}/${follower.image}`} />
                   </Avatar>
                   <p>{follower.name}</p>
                 </div>
