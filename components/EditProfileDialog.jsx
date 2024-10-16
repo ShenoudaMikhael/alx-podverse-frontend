@@ -75,12 +75,6 @@ const EditProfileDialog = ({
   };
 
   const handleSave = async () => {
-    setName(newName);
-    setUsername(newUsername);
-    setEmail(newEmail);
-    setDOB(newDOB);
-    setGender(newGender);
-    setEditProfileDialogOpen(false);
     const response = await API.updateProfile({
       name: newName === "" ? name : newName,
       username: newUsername === "" ? username : newUsername,
@@ -92,9 +86,14 @@ const EditProfileDialog = ({
       toast.success("Profile updated successfully", {
         duration: 3000,
       });
+      setName(newName);
+      setUsername(newUsername);
+      setEmail(newEmail);
+      setDOB(newDOB);
+      setGender(newGender);
       setEditProfileDialogOpen(false);
     } else {
-      toast.error("Failed to update profile", {
+      toast.error("Username Already Taken", {
         duration: 3000,
       });
     }
