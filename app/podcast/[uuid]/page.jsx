@@ -11,6 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import API from "@/api/endpoints";
 import Cookies from "js-cookie";
 import SocketClient from "@/api/socketClient";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // const podCastDetails = {
 //     title: "Tech Talks",
@@ -21,18 +23,21 @@ import SocketClient from "@/api/socketClient";
 // };
 
 const page = ({ params }) => {
+    const router = useRouter();
 
     const [isLoaded, setIsLoaded] = useState(null);
     const [podcastId, setPodcastId] = useState(null);
     const [podCastDetails, setPodCastDetails] = useState(null);
+    const podCastDetailsRef = useRef(null);
     const [userId, setuserId] = useState(null);
     const userIdRef = useRef(null);
     const [userName, setUserName] = useState(null);
     const [isHost, setIsHost] = useState(false);
-    const isHostRef = useRef(false);
+    const isHostRef = useRef(null);
     const [isLive, setIsLive] = useState(false);
     const [host, setHost] = useState(false);
     const [activeUsers, setActiveUsers] = useState([]);
+    const activeUsersRef = useRef([]);
 
 
     const socketRef = useRef();
@@ -40,8 +45,11 @@ const page = ({ params }) => {
 
     const allPeersRef = useRef({});
     const myAudio = useRef()
-    const callRef = useRef();
+    const callRef = useRef(false);
     const myId = useRef('');
+
+
+    //used in listner code
     const connectionRef = useRef();
 
 
@@ -49,212 +57,293 @@ const page = ({ params }) => {
     const userAudio = useRef();
     // const myId = useRef();
     const broadcastId = useRef();
-    // const callRef = useRef(false);
-    // const connectionRef = useRef();
-    // const host = {
-    //     name: "Abdulrahman Hany",
-    //     email: "5a9kz@example.com",
-    //     image: "https://i.pravatar.cc/500?img=2",
-    // };
-
 
     useEffect(() => {
-        SocketClient.getInstance().then(socket => {
-            console.log(socket);
-            console.log(socket.id);
-            socketRef.current = socket
+
+        (async () => {
+            const isLoggedIn = await API.isLoggedIn()
+
+            if (!isLoggedIn.ok) {
+                router.replace('/')
+            }
+            socketRef.current = await SocketClient.getInstance()
             myId.current = socketRef.current.id;
+            socketRef.current.on('activeUsers', (users) => {
+
+                activeUsersRef.current = users;
+                setActiveUsers(users);  // Update the client-side user list
+            });
+
 
 
             setPodcastId(params.uuid);
-            console.log('myId', myId.current);
-            API.postPodcast(params.uuid, socketRef.current.id).then(response => {
-                if (response.ok) {
-                    response.json().then(data => {
-                        console.log(data);
-                        setPodCastDetails(
-                            {
-                                title: data.podcast.title,
-                                description: data.podcast.description,
-                                HostName: data.podcast.user.name,
-                                Category: data.podcast.cat.name,
-                            }
+            const postPodcast = await API.postPodcast(params.uuid, "socketRef.current.id")
+            if (!postPodcast.ok) {
+                if (postPodcast.status === 404) router.replace('/404');
+                if (postPodcast.status === 401) router.replace('/')
+            }
+            const postPodcastData = await postPodcast.json()
 
-                        );
-                        setuserId(data.user_id);
-                        userIdRef.current = data.user_id;
-                        setUserName(data.me)
-                        setIsHost(data.podcast.user_id == data.user_id);
-                        isHostRef.current = data.podcast.user_id == data.user_id;
-                        // TODO:
-                        setIsLive(data.podcast.is_live)
-                        // setIsLive(true);
+            setPodCastDetails({
+                title: postPodcastData.podcast.title,
+                description: postPodcastData.podcast.description,
+                HostName: postPodcastData.podcast.user.name,
+                Category: postPodcastData.podcast.cat.name,
+                user_id: postPodcastData.podcast.user_id,
+            });
+            podCastDetailsRef.current = {
+                title: postPodcastData.podcast.title,
+                description: postPodcastData.podcast.description,
+                HostName: postPodcastData.podcast.user.name,
+                Category: postPodcastData.podcast.cat.name,
+                user_id: postPodcastData.podcast.user_id,
+            }
 
+            setuserId(postPodcastData.user_id);
+            userIdRef.current = postPodcastData.user_id;
+            setUserName(postPodcastData.me)
+            setIsHost(postPodcastData.podcast.user_id === postPodcastData.user_id);
+            isHostRef.current = postPodcastData.podcast.user_id === postPodcastData.user_id;
+            setIsLive(postPodcastData.podcast.is_live)
 
-                        setHost({
-                            email: data.podcast.user.email,
-                            name: data.podcast.user.name,
-                            image: data.podcast.user.image,
-                        })
-
-
-                        setIsLoaded(true);
-                        if (data.podcast.is_live) {
-                            console.log("podcast is live");
-                            //socket chat.
-                            console.log(socketRef.current.id)
-                            // join broadcast room
-                            socketRef.current.emit('join-podcast', params.uuid)
-
-                        }
-
-                        if (data.podcast.user_id !== data.user_id) {
-                            console.log('I am a listener');
-                            // socketRef.current.on('get-broadcast-id', (broadcaster) => {
-                            // console.log('get-broadcast-id', broadcaster)
-                            broadcastId.current = data.podcast.current_socket_id
-                            connectToBroadcaster()
-
-                            // });
-                            socketRef.current.on('connect-listner', ({ signal, to }) => {
-                                console.log('connect-listner', signal, to);
-                                connectionRef.current.signal(signal);
-
-                            });
-
-                            socketRef.current.on('me', (id) => {
-
-                                console.log('fired:me', myId.current);
-                            });
-                        } else {
-                            console.log('I am a broadcaster');
-                            console.log('socketRef.current.id', socketRef.current.id)
-                            socketRef.current.on('connect-to-broadcaster', ({ from, signalData, userToCall }) => {
-                                console.log('connect-to-broadcaster');
-                                callRef.current = { from, signalData, userToCall };
-
-                                allPeersRef.current[from].signal(signalData);
-
-                            });
-
-                            speaker()
-
-                        }
-                        socketRef.current.on('activeUsers', (users) => {
-                            setActiveUsers(users);  // Update the client-side user list
-                        });
-
-                        return () => {
-                            socketRef.current.off('activeUsers');
-                        };
-
-                    })
-                } else if (response.status === 404) location.href = '/';
-                else if (response.status === 401) location.href = '/';
+            setHost({
+                email: postPodcastData.podcast.user.email,
+                name: postPodcastData.podcast.user.name,
+                image: postPodcastData.podcast.user.image,
             })
-        });
-
-    }, [])
-    const connectToBroadcaster = () => {
-
-        if (callRef.current === true) return
-        const socket = SocketClient.getInstance();
-
-        const peer = new window.SimplePeer({ initiator: true, trickle: false });
-        peer.on('signal', (data) => {
-            console.log("there is signal")
-            console.log({ userToCall: broadcastId.current, signalData: data, from: myId.current })
-            socketRef.current.emit('connect-to-broadcaster', { userToCall: broadcastId.current, signalData: data, from: myId.current });
-        });
-        peer.on('stream', (currentStream) => {
-            console.log('currentStream', currentStream);
-            userAudio.current.srcObject = currentStream;
-        });
-        peer.on('close', () => {
-            console.log('Disconnected from the broadcaster');
-            // Cleanup logic for the listener (e.g., stop media streams, reset UI)
-        });
-
-        peer.on('error', err => {
-            console.error('Connection error:', err);
-        });
-
-        peer.on('destroyed', err => {
-            console.error('Connection error:', err);
-        });
-        // Manually end the call
-
-        connectionRef.current = peer;
-        callRef.current = true;
-    }
-    // For Host
-    useEffect(() => {
-        if (isHostRef.current) {
-            const socket = SocketClient.getInstance();
-
-            if (isHostRef.current) {
-                for (const listener in activeUsers) {
-                    console.log(userIdRef.current, activeUsers[listener].id)
-                    if (userIdRef.current !== activeUsers[listener].id) {
-                        console.log(activeUsers[listener]);
-                        const listenerId = activeUsers[listener].socketId;
-                        allPeersRef.current[listenerId] = new window.SimplePeer({ initiator: false, trickle: false, stream: streamRef.current });
 
 
-                        allPeersRef.current[listenerId].on('signal', (data) => {
-                            console.log('signal data', data);
-                            socketRef.current.emit('connect-listner', { signal: data, to: callRef.current.from });
+            setIsLoaded(true);
+            const connectToListener = async () => {
+                console.log('I am host');
+                //get stream
+                // streamRef.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+
+                socketRef.current.on('connect-to-broadcaster', ({ from, signalData, userToCall }) => {
+                    // 
+                    // callRef.current = { from, signalData, userToCall };
+                    console.log('connect-to-broadcaster host');
+                    if (allPeersRef.current[from]) {
+                        console.log('allPeersRef.current[from]')
+                        allPeersRef.current[from].signal(signalData);  // Ensure the peer connection is still valid
+                    }
+                    else {
+                        console.log('allPeersRef.current[from] else')
+
+
+                        // If there's no existing connection, create a new peer for the broadcaster
+                        allPeersRef.current[from] = new window.SimplePeer({ initiator: false, trickle: false, stream: streamRef.current });
+                        console.log(from);
+                        allPeersRef.current[from].on('signal', (data) => {
+                            console.log(data)
+                            socketRef.current.emit('connect-listner', { signal: data, to: from });
                         })
-                        allPeersRef.current[listenerId].on('close', () => {
-                            console.log('Disconnected from the broadcaster');
+                        allPeersRef.current[from].on('close', () => {
+                            allPeersRef.current[from].destroy();
+                            delete allPeersRef.current[from]
                             // Cleanup logic for the listener (e.g., stop media streams, reset UI)
+                            callRef.current = false;
                         });
 
-                        allPeersRef.current[listenerId].on('error', err => {
+                        allPeersRef.current[from].on('error', err => {
                             console.error('Connection error:', err);
                         });
-                        socketRef.current.emit('shake-listener', { listenerId, broadcaster: myId.current, });
+                        allPeersRef.current[from].signal(signalData);
+
+
+                    }
+                    console.log('shake-listener host')
+                    socketRef.current.emit('shake-listener', { from, broadcaster: myId.current, });
+
+
+
+                });
+
+            }
+            const connectToBroadcaster = () => {
+
+                const peer = new window.SimplePeer({ initiator: true, trickle: false });
+
+                peer.on('signal', (data) => {
+                    socketRef.current.emit('connect-to-broadcaster', { userToCall: broadcastId.current, signalData: data, from: myId.current });
+                });
+                peer.on('stream', (currentStream) => {
+                    userAudio.current.srcObject = currentStream;
+                });
+                peer.on('close', () => {
+                    connectionRef.current = null
+                    userAudio.current.srcObject = null
+                });
+
+                peer.on('error', err => {
+                    console.error('error Connection error:', err);
+                });
+
+                peer.on('destroyed', err => {
+                    console.error('destroyed Connection error:', err);
+                });
+                // Manually end the call
+                socketRef.current.on('connect-listner', ({ signal, to }) => {
+                    if (!peer.destroyed) {
+                        peer.signal(signal);
+                    } else {
+                        console.warn('Attempted to signal a destroyed peer on listener.');
                     }
 
-
-                }
+                    // peer.signal(signal);
+                });
+                // connectionRef.current = peer;
             }
-        }
-    }, [activeUsers])
-    const speaker = () => {
-
-        navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-            .then((currentStream) => {
-                streamRef.current = currentStream
 
 
+
+
+
+
+
+            if (postPodcastData.podcast.is_live) socketRef.current.emit('join-podcast', params.uuid)
+
+
+
+            // Use params.uuid to avoid undefined value for podcastId usestate hook.
+
+
+            // connectToBroadcaster();
+            socketRef.current.on('connect-to-me', ({ broadcasterId }) => {
+                broadcastId.current = broadcasterId;
+                connectToBroadcaster()
+            })
+
+
+            if (isHostRef.current) {
+
+                streamRef.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+
+
+                socketRef.current.on('listener-connected', (listenerId) => {
+                    console.log('listener-connected', listenerId)
+                    if (!allPeersRef.current[listenerId]) {
+                        socketRef.current.emit('connect-to-me', { listenerId, broadcasterId: myId.current })
+                        // broadcastId.current = broadcasterId
+                        //     connectToBroadcaster()
+                    }
+
+                })
+
+                socketRef.current.on('listener-left', (listenerId) => {
+                    console.log('listener-left', listenerId)
+                    broadcastId.current = null
+                    // allPeersRef.current[listenerId].destroy()
+                    // allPeersRef.current[listenerId] = null;
+
+                })
+                await connectToListener()
+            } else {
+                socketRef.current.on('broadcaster-connected', (broadcasterId) => {
+                    console.log('broadcaster-connected', broadcasterId)
+                    if (!broadcastId.current) {
+                        broadcastId.current = broadcasterId
+                        connectToBroadcaster()
+                    }
+
+                })
+
+                socketRef.current.on('broadcaster-left', (broadcasterId) => {
+                    console.log('broadcaster-left', broadcasterId)
+                    broadcastId.current = null
+
+                })
+            }
+
+
+
+        })();
+
+        return () => {
+            Object.values(allPeersRef.current).forEach(peer => {
+                peer.destroy();
             });
+            allPeersRef.current = {};
+            socketRef.current.off('activeUsers');
+            socketRef.current.off('connect-listner');
+            socketRef.current.off('connect-to-me');
+            socketRef.current.off('connect-to-broadcaster');
+            
+            socketRef.current.off('broadcaster-connected')
+            socketRef.current.off('broadcaster-left')
 
-        // socketRef.current.on('get-broadcast-id', ({ listenerId }) => {
-
-        // })
-
+            socketRef.current.off('listener-left');
+            socketRef.current.off('listener-connected');
 
 
 
 
+        };
 
-    }
+    }, [])
 
-    // const listeners = [
-    //     { name: "User 1", image: "https://i.pravatar.cc/500?img=3" },
-    //     { name: "User 2", image: "https://i.pravatar.cc/500?img=4" },
-    //     { name: "User 3", image: "https://i.pravatar.cc/500?img=5" },
-    //     { name: "User 4", image: "https://i.pravatar.cc/500?img=6" },
-    //     { name: "User 5", image: "https://i.pravatar.cc/500?img=7" },
-    //     { name: "User 6", image: "https://i.pravatar.cc/500?img=8" },
-    //     { name: "User 7", image: "https://i.pravatar.cc/500?img=9" },
-    //     { name: "User 8", image: "https://i.pravatar.cc/500?img=10" },
-    //     { name: "User 9", image: "https://i.pravatar.cc/500?img=11" },
-    //     { name: "User 10", image: "https://i.pravatar.cc/500?img=12" },
-    //     { name: "User 11", image: "https://i.pravatar.cc/500?img=13" },
-    //     { name: "User 12", image: "https://i.pravatar.cc/500?img=14" },
-    // ];
+    // For Host
+    // useEffect(() => {
+
+    //     if (isHostRef.current == true) {
+    //         // console.log(activeUsersRef.current);
+    //         const activeUsersNotInAllPeers = activeUsersRef.current.filter(user => {
+    //             return !allPeersRef.current[user.socketId];
+    //         });
+    //         console.log('activeUsersNotInAllPeers', activeUsersNotInAllPeers);
+    //         // for (const user in activeUsersNotInAllPeers) {
+    //         //     console.log(user);
+    //         //     socketRef.current.emit('connect-to-me', { listenerId: activeUsersNotInAllPeers[user].socketId, broadcasterId: myId.current });
+    //         // }
+
+    //         // console.log('activeUsers,isHostRef.current, ', activeUsers, isHostRef.current)
+    //         // for (const listener in activeUsers) {
+    //         //     if (userIdRef.current !== activeUsers[listener].id) {
+    //         //         console.log(userIdRef.current !== activeUsers[listener].id, userIdRef.current, activeUsers[listener].id)
+
+    //         //         const listenerId = activeUsers[listener].socketId;
+    //         //         console.log(listenerId)
+    //         //         console.log(allPeersRef.current[listenerId]);
+    //         //         if (allPeersRef.current[listenerId]) return;
+
+    //         //         allPeersRef.current[listenerId] = new window.SimplePeer({ initiator: false, trickle: false, stream: streamRef.current });
+    //         //         allPeersRef.current[listenerId].on('signal', (data) => {
+    //         //             console.log(data)
+    //         //             socketRef.current.emit('connect-listner', { signal: data, to: listenerId });
+    //         //         })
+    //         //         allPeersRef.current[listenerId].on('close', () => {
+    //         //             allPeersRef.current[listenerId].destroy();
+    //         //             delete allPeersRef.current[listenerId]
+    //         //             // Cleanup logic for the listener (e.g., stop media streams, reset UI)
+    //         //             callRef.current = false;
+    //         //         });
+
+    //         //         allPeersRef.current[listenerId].on('error', err => {
+    //         //             console.error('Connection error:', err);
+    //         //         });
+
+
+
+    //         //         socketRef.current.emit('shake-listener', { listenerId, broadcaster: myId.current, });
+
+    //         //     }
+
+
+    //         // }
+    //     } else if (isHostRef.current === false) {
+
+    //         // if (callRef.current) {
+
+    //         // const i = activeUsersRef.current.findIndex(x => x.id == podCastDetailsRef.current.user_id);
+    //         // if (i == -1) return;
+    //         // if (i > -1) broadcastId.current = activeUsersRef.current[i].socketId;
+    //         // // if (connectionRef.current) connectionRef.current.destroy()
+    //         // console.log('connectToBroadcaster');
+    //         // connectToBroadcaster();
+
+
+    //     }
+    // }, [activeUsers])
 
     return (!isLoaded ? <><h1>Loading...!</h1></> : (!isLive ? <><h1>havn\'t started yet...!</h1></> :
         <div>
@@ -276,7 +365,7 @@ const page = ({ params }) => {
 
                         {/* Podcast Controls */}
                         <div className="p-2 grow">
-                            <audio playsInline ref={userAudio} autoPlay width="600" />
+                            <audio playsInline ref={userAudio} autoPlay controls={true} width="600" />
                             {isHost ? <HostControlsCard /> : <ListenerControlsCard />}
                         </div>
                     </div>
