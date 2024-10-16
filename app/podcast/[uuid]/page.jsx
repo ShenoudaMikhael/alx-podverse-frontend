@@ -107,6 +107,7 @@ const page = ({ params }) => {
             setIsLive(postPodcastData.podcast.is_live)
 
             setHost({
+                id: postPodcastData.podcast.user.id,
                 email: postPodcastData.podcast.user.email,
                 name: postPodcastData.podcast.user.name,
                 image: postPodcastData.podcast.user.image,
@@ -331,7 +332,7 @@ const page = ({ params }) => {
 
                     {/* Live Chat */}
                     <div className="p-2 grow">
-                        <LiveChat room={podcastId} uname={userName.name} />
+                        <LiveChat room={podcastId} uname={userName.username} />
                     </div>
                 </div>
 
@@ -340,12 +341,14 @@ const page = ({ params }) => {
                     <ScrollArea className="border rounded-xl h-full p-4">
                         <div className="flex flex-col gap-3">
                             <p className="font-bold">Speakers</p>
-                            <ListUser name={host.name} imageUrl={host.image} />
+                            <ListUser id={host.id} myId={userName.id} name={host.name} imageUrl={host.image} />
                             <p className="font-bold">Listeners</p>
                             {activeUsers.map((listener, index) => (
                                 <ListUser
                                     key={index}
-                                    name={listener.name}
+                                    id={listener.id}
+                                    myId={userName.id}
+                                    name={listener.username}
                                     imageUrl={listener.image}
                                 />
                             ))}

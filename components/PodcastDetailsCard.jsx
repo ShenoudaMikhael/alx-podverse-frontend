@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
+import { domain } from "@/api/endpoints";
 
 const PodcastDetailsCard = ({
   title,
@@ -18,7 +19,13 @@ const PodcastDetailsCard = ({
       <div className="w-full">
         <div className="flex w-full items-center justify-around">
           <Avatar>
-            <AvatarImage src={imageurl} />
+            <AvatarImage
+              src={
+                imageurl
+                  ? `${domain}/${imageurl}`
+                  : "https://avatar.iran.liara.run/public"
+              }
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>

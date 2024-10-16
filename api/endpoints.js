@@ -20,6 +20,7 @@ const getAllPodcastsEndpoint = `${domain}/podcast/podcasts`;
 const getFollowingPodcastsEndpoint = `${domain}/podcast/followingPodcast`;
 const getRecentLivePodcastsEndpoint = `${domain}/podcast/livePodcasts`;
 const unfollowUserEndpoint = `${domain}/user`;
+const followUserEndpoint = `${domain}/user`;
 
 
 class API {
@@ -275,6 +276,19 @@ class API {
         const token = Cookies.get("token");
         const response = await fetch(`${unfollowUserEndpoint}/${id}`, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth-token': token
+            },
+        })
+
+        return response
+    }
+
+    static async followUser(id) {
+        const token = Cookies.get("token");
+        const response = await fetch(`${followUserEndpoint}/${id}`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 'x-auth-token': token
