@@ -25,6 +25,7 @@ const PodcastDiscoveryCard = ({
   imageUrl,
   isLive,
   uuid,
+  activeListeners,
 }) => {
   const router = useRouter();
   return (
@@ -59,7 +60,10 @@ const PodcastDiscoveryCard = ({
           </Avatar>
           <div>
             <p className="text-sm font-medium">{host}</p>
-            <p className="text-sm text-muted-foreground">listeners</p>
+            <p className="text-sm text-muted-foreground">
+              {activeListeners[uuid] ? activeListeners[uuid].length : 0}{" "}
+              listeners
+            </p>
           </div>
         </div>
       </CardContent>

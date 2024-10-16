@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const domain = "http://192.168.1.116:3000";
+const domain = "http://localhost:3000";
 const loginEndpoint = `${domain}/auth/login`;
 const registerEndpoint = `${domain}/auth/register`;
 const isLoggedInEndpoint = `${domain}/auth/isLoggedIn`;

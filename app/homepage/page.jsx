@@ -19,6 +19,7 @@ import API from "@/api/endpoints";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/LoadingScreen";
+import SocketClient from "@/api/socketClient";
 
 const getCategoryIdByName = (categoryName, categoriesList) => {
   const category = categoriesList.find((cat) => cat.name === categoryName);
@@ -43,6 +44,8 @@ const page = () => {
   const recentPodcastsRef = useRef([]);
   const followingPodcastsRef = useRef([]);
   const [loaded, setLoaded] = useState(false);
+  const socketRef = useRef();
+  const [activeListeners, setActiveListeners] = useState({});
 
   const handleSearch = (searchText) => {
     setSearchText(searchText);
@@ -125,6 +128,14 @@ const page = () => {
   useEffect(() => {
     API.isLoggedIn().then((result) => {
       if (result.ok) {
+        // Get podcasts active listeners
+        SocketClient.getInstance().then((socket) => {
+          socketRef.current = socket;
+          socketRef.current.on("activeListeners", (users) => {
+            setActiveListeners(users); // Update the client-side user list
+          });
+        });
+
         API.getCategories().then((result) => {
           if (result.ok) {
             result.json().then((data) => {
@@ -266,6 +277,7 @@ const page = () => {
                       imageUrl={podcast.podcastPic}
                       isLive={podcast.is_live}
                       uuid={podcast.uuid}
+                      activeListeners={activeListeners}
                     />
                   </CarouselItem>
                 ))}
@@ -317,6 +329,7 @@ const page = () => {
                       imageUrl={podcast.podcastPic}
                       isLive={podcast.is_live}
                       uuid={podcast.uuid}
+                      activeListeners={activeListeners}
                     />
                   </CarouselItem>
                 ))}
@@ -344,6 +357,7 @@ const page = () => {
             imageUrl={podcast.podcastPic}
             isLive={podcast.is_live}
             uuid={podcast.uuid}
+            activeListeners={activeListeners}
           />
         ))}
       </div>
@@ -365,6 +379,7 @@ const page = () => {
             imageUrl={podcast.podcastPic}
             isLive={podcast.is_live}
             uuid={podcast.uuid}
+            activeListeners={activeListeners}
           />
         ))}
       </div>
