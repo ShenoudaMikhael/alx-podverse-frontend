@@ -97,6 +97,7 @@ const page = () => {
                           setFollowingsList(
                             data.followingList.map((item) => {
                               return {
+                                id: item.followed_creator.id,
                                 name: item.followed_creator.name,
                                 image: item.followed_creator.profilePic,
                               };
@@ -286,7 +287,11 @@ const page = () => {
               {/* Followers & Following List */}
               <div className="flex w-full justify-around">
                 <ProfileList listName="Followers" list={followersList} />
-                <ProfileList listName="Following" list={followingsList} />
+                <ProfileList
+                  listName="Following"
+                  setFollowingsList={setFollowingsList}
+                  list={followingsList}
+                />
               </div>
             </CardContent>
           </Card>

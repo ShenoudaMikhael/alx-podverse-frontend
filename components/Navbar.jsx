@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Radio, Menu, X, User } from "lucide-react";
+import { Radio, Menu, X } from "lucide-react";
 import { clashDisplay } from "@/app/fonts/fonts";
 import { ModeToggle } from "./ThemeToggleButton";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,14 @@ import {
 } from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import API from "@/api/endpoints";
+import API, { domain } from "@/api/endpoints";
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 const Navbar = () => {
   const [hideGoliveButton, setHideGoliveButton] = useState(false);
+  const [profilePic, setProfilePic] = useState(
+    "https://avatar.iran.liara.run/public"
+  );
   useEffect(() => {
     API.getAllPodcasts().then((res) => {
       if (res.ok) {
@@ -25,6 +29,8 @@ const Navbar = () => {
           API.getProfile().then((res) => {
             if (res.ok) {
               res.json().then((profile) => {
+                if (profile.profilePic)
+                  setProfilePic(`${domain}/${profile.profilePic}`);
                 for (const podcast of data.podcasts) {
                   if (
                     profile.id === podcast.user.id &&
@@ -57,8 +63,12 @@ const Navbar = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
-          <User className="h-5 w-5" />
-          <span className="sr-only">User menu</span>
+          <Avatar>
+            <AvatarImage
+              className="w-full h-full object-cover"
+              src={profilePic}
+            />
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

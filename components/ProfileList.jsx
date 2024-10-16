@@ -11,9 +11,22 @@ import { Avatar } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
-import { domain } from "@/api/endpoints";
+import API, { domain } from "@/api/endpoints";
 
-const ProfileList = ({ listName, list }) => {
+const ProfileList = ({ listName, setFollowingsList, list }) => {
+  // Unfollow user
+  const handleUnfollow = (id) => {
+    API.unfollowUser(id).then((res) => {
+      if (res.ok) {
+        setFollowingsList((prev) => {
+          return prev.filter((user) => user.id !== id);
+        });
+      } else {
+        toast.error("Failed to unfollow user");
+      }
+    });
+  };
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -52,7 +65,12 @@ const ProfileList = ({ listName, list }) => {
                   <p>{follower.name}</p>
                 </div>
                 {listName === "Following" && (
-                  <Button variant="outline" size="sm" className="text-red-500">
+                  <Button
+                    onClick={() => handleUnfollow(follower.id)}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-500"
+                  >
                     Unfollow
                   </Button>
                 )}
