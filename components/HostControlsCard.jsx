@@ -5,8 +5,10 @@ import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Mic, MicOff } from "lucide-react";
 
-const HostControlsCard = () => {
+const HostControlsCard = ({endPodcast}) => {
   const [isMute, setIsMute] = useState(false);
+
+
   return (
     <Card className="h-full p-4 flex flex-col justify-around">
       <p>Controls</p>
@@ -19,7 +21,7 @@ const HostControlsCard = () => {
         >
           {isMute ? <MicOff /> : <Mic />}
         </Button>
-        <Button variant="destructive">End Podcast</Button>
+        <Button variant="destructive" onClick={endPodcast} >End Podcast</Button>
       </div>
       <Separator className="my-2" />
       <Button className="w-full">Promote/Demote Speakers</Button>

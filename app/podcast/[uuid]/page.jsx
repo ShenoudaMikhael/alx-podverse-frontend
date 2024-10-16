@@ -112,7 +112,6 @@ const page = ({ params }) => {
                 image: postPodcastData.podcast.user.image,
             })
 
-
             setIsLoaded(true);
             const connectToListener = async () => {
                 console.log('I am host');
@@ -253,6 +252,14 @@ const page = ({ params }) => {
                     broadcastId.current = null
 
                 })
+
+                socketRef.current.on('podcast-ended', () => {
+                    // Move listenres.
+                    router.push('/');
+                })
+
+
+
             }
 
 
@@ -268,7 +275,7 @@ const page = ({ params }) => {
             socketRef.current.off('connect-listner');
             socketRef.current.off('connect-to-me');
             socketRef.current.off('connect-to-broadcaster');
-            
+
             socketRef.current.off('broadcaster-connected')
             socketRef.current.off('broadcaster-left')
 
@@ -282,69 +289,20 @@ const page = ({ params }) => {
 
     }, [])
 
-    // For Host
-    // useEffect(() => {
 
-    //     if (isHostRef.current == true) {
-    //         // console.log(activeUsersRef.current);
-    //         const activeUsersNotInAllPeers = activeUsersRef.current.filter(user => {
-    //             return !allPeersRef.current[user.socketId];
-    //         });
-    //         console.log('activeUsersNotInAllPeers', activeUsersNotInAllPeers);
-    //         // for (const user in activeUsersNotInAllPeers) {
-    //         //     console.log(user);
-    //         //     socketRef.current.emit('connect-to-me', { listenerId: activeUsersNotInAllPeers[user].socketId, broadcasterId: myId.current });
-    //         // }
-
-    //         // console.log('activeUsers,isHostRef.current, ', activeUsers, isHostRef.current)
-    //         // for (const listener in activeUsers) {
-    //         //     if (userIdRef.current !== activeUsers[listener].id) {
-    //         //         console.log(userIdRef.current !== activeUsers[listener].id, userIdRef.current, activeUsers[listener].id)
-
-    //         //         const listenerId = activeUsers[listener].socketId;
-    //         //         console.log(listenerId)
-    //         //         console.log(allPeersRef.current[listenerId]);
-    //         //         if (allPeersRef.current[listenerId]) return;
-
-    //         //         allPeersRef.current[listenerId] = new window.SimplePeer({ initiator: false, trickle: false, stream: streamRef.current });
-    //         //         allPeersRef.current[listenerId].on('signal', (data) => {
-    //         //             console.log(data)
-    //         //             socketRef.current.emit('connect-listner', { signal: data, to: listenerId });
-    //         //         })
-    //         //         allPeersRef.current[listenerId].on('close', () => {
-    //         //             allPeersRef.current[listenerId].destroy();
-    //         //             delete allPeersRef.current[listenerId]
-    //         //             // Cleanup logic for the listener (e.g., stop media streams, reset UI)
-    //         //             callRef.current = false;
-    //         //         });
-
-    //         //         allPeersRef.current[listenerId].on('error', err => {
-    //         //             console.error('Connection error:', err);
-    //         //         });
+    const endPodcast = async () => {
 
 
+        // update the is_live => false
+        const response = await API.updatePodcast(params.uuid, { is_live: false })
+        if (response.ok) {
 
-    //         //         socketRef.current.emit('shake-listener', { listenerId, broadcaster: myId.current, });
-
-    //         //     }
-
-
-    //         // }
-    //     } else if (isHostRef.current === false) {
-
-    //         // if (callRef.current) {
-
-    //         // const i = activeUsersRef.current.findIndex(x => x.id == podCastDetailsRef.current.user_id);
-    //         // if (i == -1) return;
-    //         // if (i > -1) broadcastId.current = activeUsersRef.current[i].socketId;
-    //         // // if (connectionRef.current) connectionRef.current.destroy()
-    //         // console.log('connectToBroadcaster');
-    //         // connectToBroadcaster();
+            // emit podcast ended
+            socketRef.current.emit('podcast-ended', params.uuid);
+        }
 
 
-    //     }
-    // }, [activeUsers])
-
+    }
     return (!isLoaded ? <><h1>Loading...!</h1></> : (!isLive ? <><h1>havn\'t started yet...!</h1></> :
         <div>
             <Navbar />
@@ -366,7 +324,7 @@ const page = ({ params }) => {
                         {/* Podcast Controls */}
                         <div className="p-2 grow">
                             <audio playsInline ref={userAudio} autoPlay controls={true} width="600" />
-                            {isHost ? <HostControlsCard /> : <ListenerControlsCard />}
+                            {isHost ? <HostControlsCard endPodcast={endPodcast} /> : <ListenerControlsCard />}
                         </div>
                     </div>
 
