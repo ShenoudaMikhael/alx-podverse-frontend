@@ -281,6 +281,7 @@ const page = ({ params }) => {
 
             socketRef.current.off('listener-left');
             socketRef.current.off('listener-connected');
+            socketRef.current.off('podcast-ended');
 
 
 
