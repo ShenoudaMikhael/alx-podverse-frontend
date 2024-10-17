@@ -6,7 +6,7 @@ class SocketClient {
 
     static async getInstance() {
         if (!this.socket) {
-            this.socket = io.connect("http://localhost:3000", {
+            this.socket = io.connect("https://podverse.thedreamcatcher.dev/:5000", {
                 transports: ["websocket"],
                 auth: {
                     token: Cookies.get("token"),
