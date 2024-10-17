@@ -248,16 +248,6 @@ const LoginForm = () => {
             <Button className="w-full" onClick={() => handleSignin()}>
               Sign In
             </Button>
-            <div className="relative my-4 w-full">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
-                or continue with
-              </span>
-            </div>
-            <Button variant="outline" className="w-full">
-              {googleIcon}
-              Sign in with Google
-            </Button>
           </CardFooter>
         </Card>
       </TabsContent>
@@ -363,16 +353,6 @@ const LoginForm = () => {
           <CardFooter className="flex flex-col">
             <Button className="w-full" onClick={() => handleSignup()}>
               Sign Up
-            </Button>
-            <div className="relative my-4 w-full">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
-                or continue with
-              </span>
-            </div>
-            <Button variant="outline" className="w-full">
-              {googleIcon}
-              Sign up with Google
             </Button>
           </CardFooter>
         </Card>
