@@ -1,14 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Mic, MicOff } from "lucide-react";
 
-const HostControlsCard = ({endPodcast}) => {
+const HostControlsCard = ({ audioTrack, endPodcast }) => {
   const [isMute, setIsMute] = useState(false);
 
+  useEffect(() => {
+    if (!audioTrack) {
+      console.log("No audioTrack available yet");
+      return;
+    }
+    console.log("Audio track received in child:", audioTrack);
+    // You can now safely use audioTrack in this component.
+  }, [audioTrack]);
 
+  const handleMute = () => {
+    if (audioTrack) {
+      if (isMute) {
+        audioTrack.enabled = true;
+        setIsMute(false);
+      } else {
+        audioTrack.enabled = false;
+        setIsMute(true);
+      }
+    }
+  };
   return (
     <Card className="h-full p-4 flex flex-col justify-around">
       <p>Controls</p>
@@ -16,15 +35,15 @@ const HostControlsCard = ({endPodcast}) => {
         <Button
           size="icon"
           variant="outline"
-          onClick={() => setIsMute(!isMute)}
+          onClick={() => handleMute()}
           className="rounded-full"
         >
           {isMute ? <MicOff /> : <Mic />}
         </Button>
-        <Button variant="destructive" onClick={endPodcast} >End Podcast</Button>
+        <Button variant="destructive" onClick={endPodcast}>
+          End Podcast
+        </Button>
       </div>
-      <Separator className="my-2" />
-      <Button className="w-full">Promote/Demote Speakers</Button>
     </Card>
   );
 };

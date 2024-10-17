@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import API from "@/api/endpoints";
+import { Suspense } from "react";
 
 
 export default function Home() {
@@ -18,15 +19,16 @@ export default function Home() {
         router.push('/homepage');
       }
     })
-  }, []);
+  }, [router]);
 
   return (
-    <div className="w-screen min-h-screen h-auto flex ">
-      <div className="p-10 hidden w-[50%] lg:flex gap-6 flex-col items-center justify-center">
-        <h1 className={`${clashDisplay.className} text-7xl font-bold`}>        Podverse
+    <div className="w-screen min-h-screen h-auto flex absolute top-0 ">
+      <div className=" p-10 hidden w-[50%] lg:flex gap-6 flex-col items-center justify-center">
+        <h1 className={`${clashDisplay.className} xl:text-8xl md:text-7xl font-bold`}>
+          PODVERSE
         </h1>
-        <h2 className="text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        <h2 className="xl:text-2xl md:text-lg font-bold">
+          AN INTERACTIVE EXPERIENCE FOR ALL!
         </h2>
       </div>
       <div className="p-10 w-full lg:w-[50%] flex gap-5 flex-col justify-center items-center">
@@ -34,7 +36,9 @@ export default function Home() {
         <h1 className={`lg:hidden text-4xl font-bold ${clashDisplay.className}`}>
           Welcome to Podverse
         </h1>
-        <LoginForm />
+        <Suspense fallback="Loading...">
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ const getCategoryNameById = (id, categoriesList) => {
   return category ? category.name : null;
 };
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
@@ -195,7 +195,7 @@ const page = () => {
         router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });
-  }, []);
+  }, [pathname, router]);
 
   const [profilePicture, setProfilePicture] = useState(
     "https://avatar.iran.liara.run/public"
@@ -379,4 +379,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
