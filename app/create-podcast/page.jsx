@@ -20,7 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
@@ -71,7 +71,7 @@ const page = () => {
         router.push(`/?redirect=${encodeURIComponent(pathname)}`);
       }
     });
-  }, []);
+  }, [pathname, router]);
 
   const [startDate, setStartDate] = useState(new Date());
   const [goLiveNow, setGoLiveNow] = useState(false);
@@ -238,7 +238,6 @@ const page = () => {
             <Label>
               Podcast Picture
               <div className="flex items-center gap-2 cursor-pointer border-2 border-dashed p-4">
-                <Image />
                 {imageName === "" ? "Upload New Picture" : imageName}
               </div>
               <Input
@@ -258,4 +257,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

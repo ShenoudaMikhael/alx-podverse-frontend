@@ -31,7 +31,7 @@ const getCategoryNameById = (id, categoriesList) => {
   return category ? category.name : null;
 };
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [searchFilter, setSearchFilter] = useState("All");
   const [searchText, setSearchText] = useState("");
@@ -207,7 +207,7 @@ const page = () => {
         router.push("/");
       }
     });
-  }, []);
+  }, [router]);
 
   return !loaded ? (
     <LoadingScreen text="Loading..." />
@@ -305,8 +305,8 @@ const page = () => {
                 No Podcasts to display.
               </h1>
               <p className="text-center text-md text-gray-300 dark:text-gray-500">
-                You don't follow anyone or people you follow haven't created
-                Podcasts yet.
+                You don&apos;t follow anyone or people you follow haven&apos;t
+                created Podcasts yet.
               </p>
             </>
           ) : (
@@ -387,4 +387,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

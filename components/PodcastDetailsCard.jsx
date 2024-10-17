@@ -20,13 +20,13 @@ const PodcastDetailsCard = ({
         <div className="flex w-full items-center justify-around">
           <Avatar>
             <AvatarImage
+              className="h-full w-full object-cover"
               src={
                 imageurl
                   ? `${domain}/${imageurl}`
                   : "https://avatar.iran.liara.run/public"
               }
             />
-            <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
             <p className="text-sm font-medium">{host}</p>

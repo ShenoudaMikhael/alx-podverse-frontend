@@ -187,7 +187,6 @@ const EditPodcastDialog = ({
             <Label>
               Podcast Picture
               <div className="flex items-center gap-2 cursor-pointer border-2 border-dashed p-4">
-                <Image />
                 {newImageName === "" ? "Upload New Picture" : newImageName}
               </div>
               <Input

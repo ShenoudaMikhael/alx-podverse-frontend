@@ -49,7 +49,7 @@ const ListUser = ({ id, myId, name, imageUrl }) => {
         });
       }
     });
-  }, []);
+  }, [id, myId]);
   return (
     <div className="flex items-center gap-2">
       <Avatar>

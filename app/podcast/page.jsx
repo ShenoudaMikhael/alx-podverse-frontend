@@ -17,12 +17,10 @@ const podCastDetails = {
   Category: "Technology",
 };
 
-const page = () => {
-
-  useEffect(()=>{
-    location.href = '/homepage';
-  },[]);
-
+const Page = () => {
+  useEffect(() => {
+    location.href = "/homepage";
+  }, []);
 
   const [isHost, setIsHost] = useState(false);
   const host = {
@@ -97,4 +95,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import API from "@/api/endpoints";
+import { Suspense } from "react";
 
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
         router.push('/homepage');
       }
     })
-  }, []);
+  }, [router]);
 
   return (
     <div className="w-screen min-h-screen h-auto flex ">
@@ -34,7 +35,9 @@ export default function Home() {
         <h1 className={`lg:hidden text-4xl font-bold ${clashDisplay.className}`}>
           Welcome to Podverse
         </h1>
-        <LoginForm />
+        <Suspense fallback={<p>Loading...</p>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
