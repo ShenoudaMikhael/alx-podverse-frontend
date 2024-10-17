@@ -13,6 +13,8 @@ import Cookies from "js-cookie";
 import SocketClient from "@/api/socketClient";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import LoadingScreen from "@/components/LoadingScreen";
+import { clashDisplay } from "@/app/fonts/fonts";
 
 // const podCastDetails = {
 //     title: "Tech Talks",
@@ -57,6 +59,8 @@ const page = ({ params }) => {
     const userAudio = useRef();
     // const myId = useRef();
     const broadcastId = useRef();
+    const audioTrackRef = useRef();
+    const [audioTrack, setAudioTrack] = useState(null);
 
     useEffect(() => {
 
@@ -90,13 +94,16 @@ const page = ({ params }) => {
                 HostName: postPodcastData.podcast.user.name,
                 Category: postPodcastData.podcast.cat.name,
                 user_id: postPodcastData.podcast.user_id,
+                image: postPodcastData.podcast.user.profilePic
             });
             podCastDetailsRef.current = {
+                id: postPodcastData.podcast.id,
                 title: postPodcastData.podcast.title,
                 description: postPodcastData.podcast.description,
                 HostName: postPodcastData.podcast.user.name,
                 Category: postPodcastData.podcast.cat.name,
                 user_id: postPodcastData.podcast.user_id,
+                image: postPodcastData.podcast.user.profilePic
             }
 
             setuserId(postPodcastData.user_id);
@@ -110,7 +117,8 @@ const page = ({ params }) => {
                 id: postPodcastData.podcast.user.id,
                 email: postPodcastData.podcast.user.email,
                 name: postPodcastData.podcast.user.name,
-                image: postPodcastData.podcast.user.image,
+                username: postPodcastData.podcast.user.username,
+                image: postPodcastData.podcast.user.profilePic,
             })
 
             setIsLoaded(true);
@@ -229,6 +237,7 @@ const page = ({ params }) => {
                     }
 
                 })
+                setAudioTrack(streamRef.current.getAudioTracks()[0])
 
                 socketRef.current.on('listener-left', (listenerId) => {
                     console.log('listener-left', listenerId)
@@ -294,18 +303,29 @@ const page = ({ params }) => {
 
     const endPodcast = async () => {
 
-
+        const form = new FormData();
+        form.append("data", JSON.stringify({ is_live: "0" }));
         // update the is_live => false
-        const response = await API.updatePodcast(params.uuid, { is_live: false })
+        const response = await API.updatePodcast(podCastDetailsRef.current.id, form)
         if (response.ok) {
 
             // emit podcast ended
             socketRef.current.emit('podcast-ended', params.uuid);
+            toast.success('Podcast Ended Successfully');
+            router.push('/homepage');
+        } else {
+            toast.error('Podcast Ended Failed');
         }
 
 
     }
-    return (!isLoaded ? <><h1>Loading...!</h1></> : (!isLive ? <><h1>havn\'t started yet...!</h1></> :
+    return (!isLoaded ? <LoadingScreen text="Loading..." /> : 
+        (!isLive ? 
+        <div className="h-screen w-screen flex justify-center items-center">
+            <h1 className={`${clashDisplay.className} text-2xl`}>
+                Podcast isn't live
+                </h1>
+                </div> :
         <div>
             <Navbar />
             <div className="p-4 md:p-10 h-[calc(100vh-3.5rem)] w-full flex flex-col md:flex-row ">
@@ -325,8 +345,8 @@ const page = ({ params }) => {
 
                         {/* Podcast Controls */}
                         <div className="p-2 grow">
-                            <audio playsInline ref={userAudio} autoPlay controls={true} width="600" />
-                            {isHost ? <HostControlsCard endPodcast={endPodcast} /> : <ListenerControlsCard />}
+                            <audio playsInline ref={userAudio} autoPlay width="600" />
+                            {isHost ? <HostControlsCard audioTrack={audioTrack} endPodcast={endPodcast} /> : <ListenerControlsCard userAudio={userAudio} />}
                         </div>
                     </div>
 
@@ -341,9 +361,10 @@ const page = ({ params }) => {
                     <ScrollArea className="border rounded-xl h-full p-4">
                         <div className="flex flex-col gap-3">
                             <p className="font-bold">Speakers</p>
-                            <ListUser id={host.id} myId={userName.id} name={host.name} imageUrl={host.image} />
+                            <ListUser id={host.id} myId={userName.id} name={host.username} imageUrl={host.image} />
                             <p className="font-bold">Listeners</p>
-                            {activeUsers.map((listener, index) => (
+                            {/* Filter out the host from active listeners */}
+                            {activeUsers.filter(user => user.id !== host.id).map((listener, index) => (
                                 <ListUser
                                     key={index}
                                     id={listener.id}
