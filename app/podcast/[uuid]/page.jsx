@@ -139,6 +139,12 @@ const Page = ({ params }) => {
               allPeersRef.current[from] = new window.SimplePeer({
                 initiator: false,
                 trickle: false,
+                config: {
+                  iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' } // STUN server
+                    // Add TURN server here if needed
+                  ]
+                },
                 stream: streamRef.current,
               });
               console.log(from);
@@ -170,7 +176,14 @@ const Page = ({ params }) => {
         );
       };
       const connectToBroadcaster = () => {
-        const peer = new window.SimplePeer({ initiator: true, trickle: false });
+        const peer = new window.SimplePeer({
+          initiator: true, trickle: false,  config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' } // STUN server
+              // Add TURN server here if needed
+            ]
+          }
+        });
 
         peer.on("signal", (data) => {
           socketRef.current.emit("connect-to-broadcaster", {
