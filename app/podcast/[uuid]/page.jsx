@@ -141,7 +141,9 @@ const Page = ({ params }) => {
                 trickle: false,
                 config: {
                   iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' } // STUN server
+                    { urls: 'stun:stun.l.google.com:19302' }, // STUN server
+                    { urls: 'turn:52.58.231.161:3478', username: 'turnuser', credential: 'turn456' } // TURN server
+
                     // Add TURN server here if needed
                   ]
                 },
@@ -177,9 +179,10 @@ const Page = ({ params }) => {
       };
       const connectToBroadcaster = () => {
         const peer = new window.SimplePeer({
-          initiator: true, trickle: false,  config: {
+          initiator: true, trickle: false, config: {
             iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' } // STUN server
+              { urls: 'stun:stun.l.google.com:19302' }, // STUN server
+              { urls: 'turn:52.58.231.161:3478', username: 'turnuser', credential: 'turn456' } // TURN server
               // Add TURN server here if needed
             ]
           }
