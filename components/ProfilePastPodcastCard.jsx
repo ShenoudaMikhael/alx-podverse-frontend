@@ -34,6 +34,7 @@ const ProfilePastPodcastCard = ({
           src={imageUrl}
           alt="Podcast"
           priority
+          unoptimized
         ></Image>
       </CardContent>
       <CardFooter className="flex-col px-4 pb-4">
