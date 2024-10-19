@@ -141,11 +141,15 @@ const Page = ({ params }) => {
                 trickle: false,
                 config: {
                   iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' }, // STUN server
-                    { urls: 'turn:52.58.231.161:3478', username: 'turnuser', credential: 'turn456' } // TURN server
+                    { urls: "stun:stun.l.google.com:19302" }, // STUN server
+                    {
+                      urls: "turn:52.58.231.161:3478",
+                      username: "turnuser",
+                      credential: "turn456",
+                    }, // TURN server
 
                     // Add TURN server here if needed
-                  ]
+                  ],
                 },
                 stream: streamRef.current,
               });
@@ -158,7 +162,9 @@ const Page = ({ params }) => {
                 });
               });
               allPeersRef.current[from].on("close", () => {
-                allPeersRef.current[from].destroy();
+                if (allPeersRef.current[from]) {
+                  allPeersRef.current[from].destroy();
+                }
                 delete allPeersRef.current[from];
                 // Cleanup logic for the listener (e.g., stop media streams, reset UI)
                 callRef.current = false;
@@ -179,13 +185,19 @@ const Page = ({ params }) => {
       };
       const connectToBroadcaster = () => {
         const peer = new window.SimplePeer({
-          initiator: true, trickle: false, config: {
+          initiator: true,
+          trickle: false,
+          config: {
             iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' }, // STUN server
-              { urls: 'turn:52.58.231.161:3478', username: 'turnuser', credential: 'turn456' } // TURN server
+              { urls: "stun:stun.l.google.com:19302" }, // STUN server
+              {
+                urls: "turn:52.58.231.161:3478",
+                username: "turnuser",
+                credential: "turn456",
+              }, // TURN server
               // Add TURN server here if needed
-            ]
-          }
+            ],
+          },
         });
 
         peer.on("signal", (data) => {
@@ -200,7 +212,9 @@ const Page = ({ params }) => {
         });
         peer.on("close", () => {
           connectionRef.current = null;
-          userAudio.current.srcObject = null;
+          if (userAudio.current) {
+            userAudio.current.srcObject = null;
+          }
         });
 
         peer.on("error", (err) => {
