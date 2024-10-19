@@ -46,6 +46,7 @@ const PodcastDiscoveryCard = ({
           }
           alt="Podcast"
           priority
+          unoptimized
         ></Image>
         <div className="flex items-center gap-3 mt-3">
           <Avatar>
